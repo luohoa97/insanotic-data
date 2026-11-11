@@ -148,10 +148,16 @@
 		if (me.pressed)
 		{
 			hit = 1;
-			if (pos.x < 0 - me.tolerance.x) hit = 0;
-			if (pos.y < 0 - me.tolerance.y) hit = 0;
-			if (pos.x >= 1 - me.textSpace + me.tolerance.x) hit = 0;
-			if (pos.y >= 1 + me.tolerance.y) hit = 0;
+			// Insanotic: a finger keeps dragging wherever it drifts up or
+			// down; sideways it is clamped to the ends of the track
+			bool touch = cvar("vid_touchscreen");
+			if (!touch)
+			{
+				if (pos.x < 0 - me.tolerance.x) hit = 0;
+				if (pos.y < 0 - me.tolerance.y) hit = 0;
+				if (pos.x >= 1 - me.textSpace + me.tolerance.x) hit = 0;
+				if (pos.y >= 1 + me.tolerance.y) hit = 0;
+			}
 			if (hit)
 			{
 				// handle dragging
@@ -180,10 +186,22 @@
 	{
 		float controlCenter;
 		if (this.disabled) return false;
-		if (pos.x < 0) return false;
-		if (pos.y < 0) return false;
-		if (pos.x >= 1 - this.textSpace) return false;
-		if (pos.y >= 1) return false;
+		// Insanotic: on a touch screen the slider takes taps a finger's
+		// width around the track (see Container_itemFromPoint), and a tap
+		// puts the knob where the finger is instead of stepping a page
+		vector slop = menu_touch_slop();
+		if (pos.x < -slop.x) return false;
+		if (pos.y < -slop.y) return false;
+		if (pos.x >= 1 - this.textSpace + slop.x) return false;
+		if (pos.y >= 1 + slop.y) return false;
+		if (slop != '0 0 0')
+		{
+			this.pressed = 1;
+			this.pressOffset = 0;
+			this.previousValue = this.value;
+			this.mouseDrag(this, pos);
+			return true;
+		}
 		controlCenter = (this.value - this.valueMin) / (this.valueMax - this.valueMin) * (1 - this.textSpace - this.controlWidth) + 0.5 * this.controlWidth;
 		if (fabs(pos.x - controlCenter) <= 0.5 * this.controlWidth)
 		{
