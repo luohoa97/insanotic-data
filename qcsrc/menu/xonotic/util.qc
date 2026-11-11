@@ -535,7 +535,17 @@ float preMenuInit()
 
 string campaign_name_previous;
 float campaign_won_previous;
-void postMenuDraw() {}
+// Insanotic: both versions in the bottom right corner of the menu
+void postMenuDraw()
+{
+	string ver = sprintf("Insanotic %s  |  Xonotic %s", cvar_string("insanotic_version"), cvar_string("g_xonoticversion"));
+	float px = 14; // font size in pixels of the virtual screen
+	vector sz = eX * (px / realconwidth) + eY * (px / realconheight);
+	draw_reset_full();
+	float w = draw_TextWidth(ver, false, sz);
+	draw_Text(eX * (1 - w - 8 / realconwidth) + eY * (1 - (px + 8) / realconheight), ver, sz, '1 1 1', 0.45, false);
+	draw_reset_cropped();
+}
 void DialogOpenButton_Click_withCoords(entity button, entity tab, vector theOrigin, vector theSize);
 .entity winnerDialog;
 void preMenuDraw()
