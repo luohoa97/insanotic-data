@@ -79,6 +79,13 @@ void XonoticGameAssistSettingsTab_fill(entity me)
 		me.TD(me, 1, 3, e = makeXonoticCheckBox_T(0, "aim_assist_steer", _("Steer and detonate Devastator rockets"),
 			_("Keeps the rocket on the enemy and sets it off next to them")));
 			setDependent(e, "aim_assist_mode", 1, 2);
+	me.TR(me);
+		me.TD(me, 1, 3, e = makeXonoticCheckBox_T(0, "aim_assist_turn", _("Turn toward whoever hits you"),
+			_("Only an enemy who just hit you and can see you")));
+			setDependent(e, "aim_assist_mode", 1, 2);
+	me.TR(me);
+		me.TD(me, 1, 3, e = makeXonoticCheckBox_T(0, "aim_assist_hit_marker", _("Show where hits come from"), "-"));
+			setDependent(e, "aim_assist_mode", 1, 2);
 
 	me.gotoRC(me, 0, 3.4); me.setFirstColumn(me, me.currentColumn);
 		me.TD(me, 1, 3, e = makeXonoticCheckBox_T(0, "aim_assist_autofire", _("Auto-fire"),
