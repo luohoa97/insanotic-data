@@ -686,8 +686,38 @@ bool HUD_WouldShowCursor()
 }
 
 float prev_myteam;
+// Insanotic: a banner when a match starts (singleplayer and online): game
+// mode, map and goal, e.g. "Deathmatch on Boil" / "10 points". A new match
+// is a new game start time (map change, restart, end of warmup).
+string Scoreboard_Fraglimit_Draw(float limit, bool is_leadlimit);
+void HUD_MatchBanner()
+{
+	static float announced_start;
+	float st = STAT(GAMESTARTTIME);
+	if (!gametype || intermission || st <= 0 || st == announced_start || time < st)
+		return;
+	announced_start = st;
+	string m = mi_shortname;
+	if (m == "") return;
+	m = strcat(strtoupper(substring(m, 0, 1)), substring(m, 1, -1));
+	string str = sprintf(_("^7%s on ^2%s"), MapInfo_Type_ToText(gametype), m);
+	string goal = "";
+	float fl = STAT(FRAGLIMIT), tl = STAT(TIMELIMIT);
+	if (fl > 0 && !gametype.m_hidelimits)
+		goal = sprintf(_("^7First to %s"), Scoreboard_Fraglimit_Draw(fl, false));
+	if (tl > 0)
+	{
+		string t = sprintf(_("^3%1.0f minutes"), tl);
+		goal = (goal != "") ? strcat(goal, "^7  |  ", t) : t;
+	}
+	if (goal != "")
+		str = strcat(str, "\n", goal);
+	centerprint_Add(0, str, 4, 0);
+}
+
 void HUD_Main()
 {
+	HUD_MatchBanner();
 	int i;
 	if(hud_configure_menu_open == 1)
 		hud_fade_alpha = 1;
