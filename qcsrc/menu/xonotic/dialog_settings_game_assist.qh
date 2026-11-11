@@ -1,0 +1,16 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Insanotic: Game > Assist settings (the aim_assist client mod)
+#pragma once
+
+#include "tab.qh"
+CLASS(XonoticGameAssistSettingsTab, XonoticTab)
+	METHOD(XonoticGameAssistSettingsTab, fill, void(entity));
+	METHOD(XonoticGameAssistSettingsTab, showNotify, void(entity));
+	ATTRIB(XonoticGameAssistSettingsTab, title, string, _("Assist"));
+	ATTRIB(XonoticGameAssistSettingsTab, intendedWidth, float, 0.9);
+	ATTRIB(XonoticGameAssistSettingsTab, rows, float, 15.5);
+	ATTRIB(XonoticGameAssistSettingsTab, columns, float, 6.2);
+ENDCLASS(XonoticGameAssistSettingsTab)
+entity makeXonoticGameAssistSettingsTab();
+#include "../gamesettings.qh"
+REGISTER_SETTINGS(Assist, makeXonoticGameAssistSettingsTab());

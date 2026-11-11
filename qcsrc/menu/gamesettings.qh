@@ -4,7 +4,7 @@
 
 #include "xonotic/tab.qh"
 
-REGISTRY(Settings, BITS(3))
+REGISTRY(Settings, BITS(4)) // Insanotic: was BITS(3), full with the Assist tab
 REGISTER_REGISTRY(Settings)
 
 REGISTRY_DEFINE_GET(Settings, NULL)
