@@ -283,10 +283,24 @@ void m_init_delayed()
 	cvar_set("_menu_initialized", "2");
 }
 
+void m_mouse_follow(vector p)
+{
+	draw_reset_cropped();
+	vector newMouse = globalToBox(p, draw_shift, draw_scale);
+	if (newMouse != menuMousePos)
+	{
+		menuMousePos = newMouse;
+		if (mouseButtonsPressed) main.mouseDrag(main, menuMousePos);
+		else main.mouseMove(main, menuMousePos);
+	}
+}
+
 void m_keyup(float key, float ascii)
 {
 	if (!menuInitialized) return;
 	if (!Menu_Active) return;
+	if (menuMouseMode && key >= K_MOUSE1 && key <= K_MOUSE3)
+		m_mouse_follow(getmousepos());
 	draw_reset_cropped();
 	main.keyUp(main, key, ascii, menuShiftState);
 	if (key >= K_MOUSE1 && key <= K_MOUSE3)
@@ -325,6 +339,10 @@ void m_keydown(float key, float ascii)
 			++mouseButtonsPressed;
 			return;
 		}
+		// Insanotic: a finger arrives with its press: take the pointer to
+		// it before the press, or the press lands where the last tap was
+		// (every button needed two taps)
+		m_mouse_follow(p);
 	}
 
 	if (keyGrabber)
