@@ -105,6 +105,50 @@ void draw_Fill(vector theOrigin, vector theSize, vector theColor, float theAlpha
 //   1/4 width: right part
 // it is assumed to be 4x as wide as high for aspect ratio purposes, which
 // means, the parts are a square, two squares and a square.
+// Insanotic flat look: skin frames (buttons, tabs, input boxes, list and
+// slider tracks, dialog frames, tooltips) are drawn as flat panels with a
+// thin edge instead of stretched skin pictures. Crisp at any resolution.
+// On unless menu_buttons is 0.
+bool draw_flat;
+const vector FLAT_ACCENT = '0.3 0.65 1';
+const vector FLAT_PANEL = '0.07 0.1 0.16';
+
+// state from a skin picture's suffix: n(ormal) f(ocused) c(licked)
+// d(isabled) s(lider/scrollbar track)
+string draw_FlatState(string pic)
+{
+	int n = strlen(pic);
+	if (n >= 2 && substring(pic, n - 2, 1) == "_") return substring(pic, n - 1, 1);
+	return "n";
+}
+
+// origin and size in screen pixels
+void draw_FlatFrame(vector o, vector sz, vector edge, float ea)
+{
+	drawfill(o, eX * sz.x + eY, edge, ea, 0);
+	drawfill(o + eY * (sz.y - 1), eX * sz.x + eY, edge, ea, 0);
+	drawfill(o, eX + eY * sz.y, edge, ea, 0);
+	drawfill(o + eX * (sz.x - 1), eX + eY * sz.y, edge, ea, 0);
+}
+
+void draw_FlatButton(vector o, string pic, vector sz, vector theColor, float theAlpha)
+{
+	string st = draw_FlatState(pic);
+	vector bg = FLAT_PANEL;
+	if (theColor != '1 1 1' && theColor != '0 0 0') bg = bg * 0.5 + theColor * 0.3;
+	vector edge = '1 1 1';
+	float a = 0.85, ea = 0.18;
+	switch (st)
+	{
+		case "s": bg = '0 0 0'; a = 0.35; ea = 0.1; break;
+		case "f": bg = bg * 1.6; edge = FLAT_ACCENT; ea = 0.9; break;
+		case "c": bg = FLAT_ACCENT * 0.65; edge = FLAT_ACCENT; ea = 1; break;
+		case "d": a = 0.4; ea = 0.08; break;
+	}
+	drawfill(o, sz, bg, a * theAlpha, 0);
+	draw_FlatFrame(o, sz, edge, ea * theAlpha);
+}
+
 void draw_ButtonPicture(vector theOrigin, string pic, vector theSize, vector theColor, float theAlpha)
 {
 	vector square;
@@ -114,6 +158,7 @@ void draw_ButtonPicture(vector theOrigin, string pic, vector theSize, vector the
 	theOrigin = boxToGlobal(theOrigin, draw_shift, draw_scale);
 	theSize = boxToGlobalSize(theSize, draw_scale);
 	theAlpha *= draw_alpha;
+	if (draw_flat) { draw_FlatButton(theOrigin, pic, theSize, theColor, theAlpha); return; }
 	width = eX * theSize.x;
 	height = eY * theSize.y;
 	if(theSize.x <= theSize.y * 2)
@@ -149,6 +194,13 @@ void draw_VertButtonPicture(vector theOrigin, string pic, vector theSize, vector
 	theOrigin = boxToGlobal(theOrigin, draw_shift, draw_scale);
 	theSize = boxToGlobalSize(theSize, draw_scale);
 	theAlpha *= draw_alpha;
+	if (draw_flat)
+	{
+		// scrollbars: a slim bar in the middle of the space
+		vector slim = eX * max(2, floor(theSize.x * 0.4)) + eY * theSize.y;
+		draw_FlatButton(theOrigin + eX * floor((theSize.x - slim.x) / 2), pic, slim, theColor, theAlpha);
+		return;
+	}
 	width = eX * theSize.x;
 	height = eY * theSize.y;
 	if(theSize.y <= theSize.x * 2)
@@ -192,6 +244,18 @@ void draw_BorderPicture(vector theOrigin, string pic, vector theSize, vector the
 	// zero size? bail out, we cannot handle this
 	if(theSize.x <= 0 || theSize.y <= 0)
 		return;
+	if (draw_flat)
+	{
+		// dark panel, a lighter band for the title (the top border), edge
+		drawfill(theOrigin, theSize, '0.035 0.05 0.085', 0.94 * theAlpha, 0);
+		if (theBorderSize.y > 0)
+		{
+			drawfill(theOrigin, eX * theSize.x + eY * theBorderSize.y, '0.08 0.12 0.2', 0.95 * theAlpha, 0);
+			drawfill(theOrigin + eY * theBorderSize.y, eX * theSize.x + eY, FLAT_ACCENT, 0.5 * theAlpha, 0);
+		}
+		draw_FlatFrame(theOrigin, theSize, '1 1 1', 0.15 * theAlpha);
+		return;
+	}
 	if(theBorderSize.x <= 0) // no x border
 	{
 		if(theBorderSize.y <= 0)

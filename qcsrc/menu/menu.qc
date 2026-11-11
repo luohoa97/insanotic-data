@@ -873,6 +873,7 @@ void m_draw(float width, float height)
 
 	if (menuAlpha != prevMenuAlpha) cvar_set("_menu_alpha", ftos(menuAlpha));
 
+	draw_flat = !(cvar_type("menu_buttons") && !cvar("menu_buttons"));
 	draw_reset_cropped();
 	preMenuDraw();
 	draw_reset_cropped();
