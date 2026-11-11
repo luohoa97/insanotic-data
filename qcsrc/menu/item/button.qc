@@ -126,7 +126,28 @@
 					bOrigin = eY * (0.5 * (1 - me.realFontSize.y)) + eX * (0.5 * (me.keepspaceLeft - me.realFontSize.x));
 					bSize = me.realFontSize;
 				}
-				if (me.disabled) draw_Picture(bOrigin, strcat(me.src, "_d", me.srcSuffix), bSize, me.colorD, 1);
+				if (draw_flat)
+				{
+					// small square box: blue fill when on (check and radio
+					// boxes), an x for close buttons; blue edge when hovered
+					bool on = (me.srcSuffix == "1") || me.forcePressed;
+					bool hot = !me.disabled && (me.focused || me.pressed || me.clickTime > 0);
+					vector px = globalToBoxSize('1 1 0', draw_scale);
+					vector inset = bSize * 0.2;
+					draw_Fill(bOrigin + inset, bSize - 2 * inset, '0 0 0', 0.45);
+					vector edge = hot ? FLAT_ACCENT : '1 1 1';
+					float ea = (hot ? 1 : 0.45) * (me.disabled ? 0.4 : 1);
+					vector o2 = bOrigin + inset, s2 = bSize - 2 * inset;
+					draw_Fill(o2, eX * s2.x + eY * px.y, edge, ea);
+					draw_Fill(o2 + eY * (s2.y - px.y), eX * s2.x + eY * px.y, edge, ea);
+					draw_Fill(o2, eX * px.x + eY * s2.y, edge, ea);
+					draw_Fill(o2 + eX * (s2.x - px.x), eX * px.x + eY * s2.y, edge, ea);
+					if (strstrofs(me.src, "close", 0) >= 0)
+						draw_CenterText(o2 + eX * s2.x * 0.5 + eY * s2.y * 0.1, "x", eX * s2.x * 0.8 + eY * s2.y * 0.8, edge, ea, false);
+					else if (on)
+						draw_Fill(o2 + s2 * 0.22, s2 * 0.56, FLAT_ACCENT, me.disabled ? 0.4 : 1);
+				}
+				else if (me.disabled) draw_Picture(bOrigin, strcat(me.src, "_d", me.srcSuffix), bSize, me.colorD, 1);
 				else if (me.forcePressed || me.pressed || me.clickTime > 0) draw_Picture(bOrigin, strcat(me.src, "_c", me.srcSuffix), bSize, me.colorC, 1);
 				else if (me.focused) draw_Picture(bOrigin, strcat(me.src, "_f", me.srcSuffix), bSize, me.colorF, 1);
 				else draw_Picture(bOrigin, strcat(me.src, "_n", me.srcSuffix), bSize, me.color, 1);
