@@ -1,7 +1,11 @@
 #include "credits.qh"
 
 #define CREDITS(TITLE, FUNCTION, PERSON, PERSON_, NL) \
-	TITLE(_("Core Team")) \
+	TITLE(_("Insanotic")) \
+		FUNCTION(_("Creator")) \
+		PERSON(Neil Luo) \
+	NL() \
+	TITLE(_("Xonotic Core Team")) \
 		PERSON(Rudolf "divVerent" Polzer) \
 		PERSON(Ant "Antibody" Zucaro) \
 		PERSON(Antonio "terencehill" Piu) \
