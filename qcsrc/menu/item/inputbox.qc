@@ -347,3 +347,20 @@
 	{
 		me.focusable = !me.disabled;
 	}
+
+	// Insanotic: on a touch screen there is no keyboard until one is asked
+	// for. The engine opens the on-screen keyboard while
+	// vid_touchscreen_showkeyboard is 1, so a text field holds it open while
+	// it has the focus.
+	METHOD(InputBox, focusEnter, void(entity me))
+	{
+		SUPER(InputBox).focusEnter(me);
+		if (cvar("vid_touchscreen"))
+			cvar_set("vid_touchscreen_showkeyboard", "1");
+	}
+	METHOD(InputBox, focusLeave, void(entity me))
+	{
+		SUPER(InputBox).focusLeave(me);
+		if (cvar("vid_touchscreen"))
+			cvar_set("vid_touchscreen_showkeyboard", "0");
+	}
