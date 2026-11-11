@@ -1528,6 +1528,24 @@ string _getcommandkey(string cmd_name, string command, bool forcename)
 	if (!autocvar_hud_showbinds)
 		return cmd_name;
 
+	// Insanotic: on a touch screen name the on-screen button ("Press JUMP
+	// to join"), not the keyboard key nobody can press; a command without
+	// a button is named by what it does
+	if (cvar("vid_touchscreen"))
+	{
+		switch (command)
+		{
+			case "+jump": return _("JUMP");
+			case "+fire": case "+attack": return _("FIRE");
+			case "+fire2": case "+attack2": return _("ALT");
+			case "+crouch": case "+duck": return _("DUCK");
+			case "+showscores": return _("TAB");
+			case "messagemode": return _("CHAT");
+			case "togglemenu": case "menu_showquitdialog": return _("MENU");
+			default: return cmd_name;
+		}
+	}
+
 	keys = db_get(binddb, command);
 	if (keys == "")
 	{
