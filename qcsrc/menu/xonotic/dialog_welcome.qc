@@ -12,6 +12,54 @@ void welcomeDialog_resetStrings(entity me)
 {
 	strcpy(me.serverinfo_name, _("Welcome"));
 	strcpy(me.serverinfo_MOTD, "");
+	strcpy(me.bannerMap, "");
+	strcpy(me.bannerTitle, "");
+	strcpy(me.bannerType, "");
+}
+
+string welcomeDialog_trim(string s)
+{
+	while (substring(s, 0, 1) == " ") s = substring(s, 1, -1);
+	return s;
+}
+
+// Insanotic: the welcome text the game sends lists the version greeting,
+// game type and map line by line; take the map and game type out for the
+// banner and keep the rest (player limits, modifications, the server's own
+// message) as the details
+string welcomeDialog_splitBanner(entity me, string motd)
+{
+	string rest = "", line, plain;
+	int n = tokenizebyseparator(motd, "\\n");
+	int skipped_greeting = false;
+	for (int i = 0; i < n; ++i)
+	{
+		line = argv(i);
+		plain = strdecolorize(line);
+		if (substring(plain, 0, strlen(_("Gametype:"))) == _("Gametype:"))
+		{
+			strcpy(me.bannerType, welcomeDialog_trim(substring(plain, strlen(_("Gametype:")), -1)));
+			continue;
+		}
+		if (substring(plain, 0, strlen(_("Map:"))) == _("Map:"))
+		{
+			string m = welcomeDialog_trim(substring(plain, strlen(_("Map:")), -1));
+			int sep = strstrofs(m, " // ", 0);
+			string bsp = (sep >= 0) ? substring(m, 0, sep) : m;
+			strcpy(me.bannerTitle, (sep >= 0) ? substring(m, sep + 4, -1) : m);
+			strcpy(me.bannerMap, strcat("/maps/", strtolower(bsp)));
+			continue;
+		}
+		// the plain greeting ("Welcome to ..."); version warnings stay
+		if (!skipped_greeting && plain != "" && strstrofs(line, "^1", 0) < 0 && strstrofs(line, "^3", 0) < 0)
+		{
+			skipped_greeting = true;
+			continue;
+		}
+		if (plain == "" && rest == "") continue;
+		rest = (rest == "") ? line : strcat(rest, "\\n", line);
+	}
+	return rest;
 }
 
 float XonoticWelcomeDialog_keyDown(entity me, float key, float ascii, float shift)
@@ -72,6 +120,12 @@ void XonoticWelcomeDialog_readInputArgs(entity me, int argsbuf)
 				campaign_msg = strreplace("_LEVEL_DESC", desc, bufstr_get(argsbuf, ++i));
 			}
 			strcpy(me.serverinfo_MOTD, campaign_msg);
+			if (level >= 0 && level < campaign_entries)
+			{
+				strcpy(me.bannerMap, strcat("/maps/", campaign_mapname[level]));
+				strcpy(me.bannerTitle, campaign_shortdesc[level]);
+				strcpy(me.bannerType, sprintf(_("Level %d"), level + 1));
+			}
 			break;
 		}
 		else if(s == "RESET")
@@ -82,13 +136,33 @@ void XonoticWelcomeDialog_readInputArgs(entity me, int argsbuf)
 		++i;
 	}
 	//me.serverinfo_name_ent.setText(me.serverinfo_name_ent, me.serverinfo_name);
-	me.serverinfo_MOTD_ent.setText(me.serverinfo_MOTD_ent, me.serverinfo_MOTD);
+	string details = me.serverinfo_MOTD;
+	if (me.bannerTitle == "" && details != "")
+		details = welcomeDialog_splitBanner(me, details);
+	me.serverinfo_MOTD_ent.setText(me.serverinfo_MOTD_ent, details);
 	me.frame.setText(me.frame, me.serverinfo_name);
 }
 
 void XonoticWelcomeDialog_draw(entity me)
 {
 	SUPER(XonoticWelcomeDialog).draw(me);
+
+	// map banner: the map's picture with its name and the game type
+	entity b = me.bannerItem;
+	if (b && me.bannerTitle != "")
+	{
+		vector o = b.Container_origin, sz = b.Container_size;
+		if (!draw_PictureCover(o, me.bannerMap, sz, 0.55, 1))
+			draw_Fill(o, sz, '0.06 0.09 0.15', 1);
+		for (int k = 0; k < 8; ++k)
+			draw_Fill(o + eY * sz.y * (0.35 + 0.65 * k / 8), eX * sz.x + eY * sz.y * 0.65 / 8, '0 0 0', 0.09 * (k + 1));
+		float th = sz.y * 0.26, gh = sz.y * 0.12;
+		float ratio = draw_scale.y / draw_scale.x;
+		vector p = o + eX * sz.y * 0.12 * ratio + eY * (sz.y - th - gh * 1.6);
+		if (me.bannerType != "")
+			draw_Text(p, strtoupper(me.bannerType), eX * gh * ratio + eY * gh, '0.3 0.65 1', 1, false);
+		draw_Text(p + eY * gh * 1.4, draw_TextShortenToWidth(me.bannerTitle, sz.x * 0.9, false, eX * th * ratio + eY * th), eX * th * ratio + eY * th, '1 1 1', 1, false);
+	}
 
 	if (!(gamestatus & (GAME_ISSERVER | GAME_CONNECTED)))
 		me.close(me);
@@ -123,12 +197,17 @@ void XonoticWelcomeDialog_fill(entity me)
 	entity e;
 
 	me.TR(me);
-		me.TD(me, me.rows - 1, me.columns, me.serverinfo_MOTD_ent = makeXonoticTextBox());
+		me.TD(me, 5, me.columns, me.bannerItem = makeXonoticTextLabel(0, ""));
+	me.gotoRC(me, 5.5, 0);
+		me.TD(me, me.rows - 6.5, me.columns, me.serverinfo_MOTD_ent = makeXonoticTextBox());
 			me.serverinfo_MOTD_ent.align = 0.5;
 			me.serverinfo_MOTD_ent.allowColors = true;
 			me.serverinfo_MOTD_ent.escapedNewLines = true;
 	me.gotoRC(me, me.rows - 1, 0);
-		me.TD(me, 1, me.columns / 2, me.joinButton_ent = makeXonoticCommandButton(_("Join"), '0 1 0', "cmd join", COMMANDBUTTON_CLOSE));
+		me.TD(me, 1, me.columns / 2, me.joinButton_ent = makeXonoticCommandButton(_("Join"), '0 0 0', "cmd join", COMMANDBUTTON_CLOSE));
 			me.joinButton_ent.preferredFocusPriority = 1;
+			me.joinButton_ent.fillStyle = true;
+			me.joinButton_ent.fillColor = '0.12 0.38 0.75';
 		me.TD(me, 1, me.columns / 2, me.spectateButton_ent = makeXonoticCommandButton(_("Spectate"), '0 0 0', "cmd spectate", COMMANDBUTTON_CLOSE));
+			me.spectateButton_ent.fillStyle = true;
 }

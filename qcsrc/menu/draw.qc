@@ -149,6 +149,22 @@ void draw_FlatButton(vector o, string pic, vector sz, vector theColor, float the
 	draw_FlatFrame(o, sz, edge, ea * theAlpha);
 }
 
+// Insanotic: a picture covering a box (cropped to its shape, centered),
+// darkened to the given brightness; false when the picture is missing
+bool draw_PictureCover(vector theOrigin, string pic, vector theSize, float brightness, float theAlpha)
+{
+	vector isz = draw_PictureSize(pic);
+	if (isz.x <= 0 || isz.y <= 0) return false;
+	vector pxsz = boxToGlobalSize(theSize, draw_scale);
+	float aspect = pxsz.x / max(1, pxsz.y), iaspect = isz.x / max(1, isz.y);
+	vector src = '1 1 0', srcpos = '0 0 0';
+	if (iaspect > aspect) { src.x = aspect / iaspect; srcpos.x = (1 - src.x) / 2; }
+	else { src.y = iaspect / aspect; srcpos.y = (1 - src.y) / 2; }
+	drawsubpic(boxToGlobal(theOrigin, draw_shift, draw_scale), pxsz, draw_UseSkinFor(pic),
+		srcpos, src, '1 1 1' * brightness, theAlpha * draw_alpha, 0);
+	return true;
+}
+
 void draw_ButtonPicture(vector theOrigin, string pic, vector theSize, vector theColor, float theAlpha)
 {
 	vector square;
