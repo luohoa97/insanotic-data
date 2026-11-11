@@ -216,8 +216,23 @@
 				me.pressed = 5;
 			if (me.pressed == 5)
 			{
-				float target = bound(0, me.previousValue - moved, max(0, me.getTotalHeight(me) - 1));
-				me.scrollPos = me.scrollPosTarget = target;
+				// follow the finger; past either end the list stretches
+				// (rubber band, 40 % of the finger's movement, at most a
+				// quarter of the window)
+				float raw = me.previousValue - moved;
+				float maxpos = max(0, me.getTotalHeight(me) - 1);
+				me.scrollPos = me.scrollPosTarget = bound(0, raw, maxpos);
+				me.touchOverscroll = bound(-0.25, (raw - me.scrollPos) * 0.4, 0.25);
+				// finger speed, smoothed over the last moves
+				float dt = time - me.touchLastTime;
+				if (dt > 0.001)
+				{
+					float v = (raw - me.touchLastPos) / dt;
+					float k = bound(0, dt / 0.05, 1);
+					me.touchVelocity = me.touchVelocity * (1 - k) + v * k;
+					me.touchLastPos = raw;
+					me.touchLastTime = time;
+				}
 				me.setFocusedItem(me, -1);
 				me.mouseMoveOffset = -1;
 			}
@@ -258,7 +273,12 @@
 			// scroll: decide on release (tap) or when the finger moves
 			this.pressed = 4;
 			this.pressOffset = pos.y;
-			this.previousValue = this.scrollPos;
+			this.previousValue = this.scrollPos + this.touchOverscroll / 0.4;
+			// a tap on a moving list only stops it
+			this.touchStopOnly = fabs(this.touchVelocity) > 0.3;
+			this.touchVelocity = 0;
+			this.touchLastPos = this.previousValue;
+			this.touchLastTime = time;
 		}
 		else
 		{
@@ -284,7 +304,16 @@
 	float ListBox_mouseRelease(entity me, vector pos)
 	{
 		if (me.pressed == 4)
-			me.pressed = 2; // a tap: an ordinary click on the item under it
+		{
+			if (me.touchStopOnly)
+				me.pressed = 0; // the tap stopped a fling
+			else
+				me.pressed = 2; // a tap: an ordinary click on the item under it
+		}
+		if (me.pressed == 5 && time - me.touchLastTime > 0.08)
+			me.touchVelocity = 0; // the finger rested before lifting: no fling
+		if (me.pressed == 0)
+			return 1;
 		if (me.pressed == 1 || me.pressed == 5)
 		{
 			// slider dragging mode
@@ -375,6 +404,31 @@
 			me.scrollToItem(me, me.needScrollToItem);
 			me.needScrollToItem = -1;
 		}
+		if (me.pressed != 4 && me.pressed != 5)
+		{
+			// touch fling: glide on, slowing down (about 0.3 s time
+			// constant); at an end the remaining speed turns into a short
+			// rubber band stretch
+			if (me.touchVelocity)
+			{
+				float maxpos = max(0, me.getTotalHeight(me) - 1);
+				float p = me.scrollPos + me.touchVelocity * frametime;
+				me.touchVelocity *= exp(-frametime / 0.3);
+				if (p < 0 || p > maxpos)
+				{
+					me.touchOverscroll = bound(-0.25, me.touchVelocity * 0.04, 0.25);
+					me.touchVelocity = 0;
+				}
+				me.scrollPos = me.scrollPosTarget = bound(0, p, maxpos);
+				if (fabs(me.touchVelocity) < 0.05) me.touchVelocity = 0;
+			}
+			// spring back from a stretch
+			if (me.touchOverscroll)
+			{
+				me.touchOverscroll *= exp(-frametime / 0.08);
+				if (fabs(me.touchOverscroll) < 0.001) me.touchOverscroll = 0;
+			}
+		}
 		if (me.scrollPos != me.scrollPosTarget)
 		{
 			float averaging_time = (me.pressed == 1)
@@ -408,7 +462,7 @@
 		vector oldscale = draw_scale;
 
 		int i = me.getItemAtPos(me, me.scrollPos);
-		float y = me.getItemStart(me, i) - me.scrollPos;
+		float y = me.getItemStart(me, i) - me.scrollPos - me.touchOverscroll;
 		for ( ; i < me.nItems && y < 1; ++i)
 		{
 			draw_shift = boxToGlobal(eY * y, oldshift, oldscale);

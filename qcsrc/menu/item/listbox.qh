@@ -28,6 +28,12 @@ CLASS(ListBox, MenuItem)
 	ATTRIB(ListBox, previousValue, float, 0);
 	ATTRIB(ListBox, pressed, float, 0);  // 0 = normal, 1 = scrollbar dragging, 2 = item dragging, 3 = released, 4 = touch pressed, 5 = touch scrolling
 	ATTRIB(ListBox, pressOffset, float, 0);
+	// Insanotic: touch scrolling physics (window heights, per second)
+	ATTRIB(ListBox, touchVelocity, float, 0);   // fling speed after the finger lifts
+	ATTRIB(ListBox, touchOverscroll, float, 0); // rubber band past the top (<0) or bottom (>0)
+	ATTRIB(ListBox, touchLastPos, float, 0);
+	ATTRIB(ListBox, touchLastTime, float, 0);
+	ATTRIB(ListBox, touchStopOnly, bool, false); // this press stopped a fling: no click
 
 	METHOD(ListBox, updateControlTopBottom, void(entity));
 	ATTRIB(ListBox, controlTop, float, 0);
