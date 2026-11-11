@@ -145,7 +145,7 @@
 					if (strstrofs(me.src, "close", 0) >= 0)
 						draw_CenterText(o2 + eX * s2.x * 0.5 + eY * s2.y * 0.1, "x", eX * s2.x * 0.8 + eY * s2.y * 0.8, edge, ea, false);
 					else if (on)
-						draw_Fill(o2 + s2 * 0.22, s2 * 0.56, FLAT_ACCENT, me.disabled ? 0.4 : 1);
+						draw_Fill(o2 + s2 * 0.22, s2 * 0.56, FLAT_ACCENT, (me.disabled ? 0.4 : 1));
 				}
 				else if (me.disabled) draw_Picture(bOrigin, strcat(me.src, "_d", me.srcSuffix), bSize, me.colorD, 1);
 				else if (me.forcePressed || me.pressed || me.clickTime > 0) draw_Picture(bOrigin, strcat(me.src, "_c", me.srcSuffix), bSize, me.colorC, 1);

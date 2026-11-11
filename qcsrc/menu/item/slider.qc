@@ -242,7 +242,25 @@
 		me.focusable = !me.disabled;
 		save = draw_alpha;
 		if (me.disabled) draw_alpha *= me.disabledAlpha;
+		if (draw_flat)
+		{
+			// thin track, blue up to a slim knob that lights up when used
+			vector px = globalToBoxSize('1 1 0', draw_scale);
+			float w = 1 - me.textSpace;
+			float th = px.y * 3, ty = 0.5 - th / 2;
+			draw_Fill(eY * ty, eX * w + eY * th, '1 1 1', 0.15);
+			if (me.valueMax > me.valueMin && almost_in_bounds(me.valueMin, me.sliderValue, me.valueMax))
+			{
+				float f = (me.sliderValue - me.valueMin) / (me.valueMax - me.valueMin);
+				float kw = px.x * 8, kx = f * (w - kw);
+				bool hot = !me.disabled && (me.focused || me.pressed);
+				draw_Fill(eY * ty, eX * (kx + kw / 2) + eY * th, FLAT_ACCENT, (me.disabled ? 0.3 : 0.9));
+				draw_Fill(eX * kx + eY * 0.2, eX * kw + eY * 0.6, (hot ? FLAT_ACCENT : '0.85 0.88 0.92'), 1);
+			}
+		}
+		else
 		draw_ButtonPicture('0 0 0', strcat(me.src, "_s"), eX * (1 - me.textSpace) + eY, me.color2, 1);
+		if (!draw_flat)
 		if (me.valueMax > me.valueMin) // valid?
 		if (almost_in_bounds(me.valueMin, me.sliderValue, me.valueMax))
 		{
