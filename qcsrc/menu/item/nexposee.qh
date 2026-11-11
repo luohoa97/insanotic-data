@@ -22,6 +22,9 @@ CLASS(Nexposee, Container)
 	METHOD(Nexposee, setNexposee, void(entity, entity, vector, float, float));
 	ATTRIB(Nexposee, mousePosition, vector, '0 0 0');
 	METHOD(Nexposee, pullNexposee, void(entity, entity, vector));
+	// Insanotic: show a dialog as a button (title over a faded picture)
+	// instead of a shrunken copy of the dialog; small = a plain text button
+	METHOD(Nexposee, setNexposeeButton, void(entity, entity, string, string, string, float));
 ENDCLASS(Nexposee)
 
 void ExposeeCloseButton_Click(entity button, entity other);  // un-exposees the current state
@@ -44,3 +47,11 @@ void ExposeeCloseButton_Click(entity button, entity other);  // un-exposees the 
 .vector Nexposee_scaleCenter;
 .vector Nexposee_align;
 .float Nexposee_animationFactor;
+
+// Insanotic main menu buttons (see setNexposeeButton)
+.string Nexposee_buttonImage;
+.string Nexposee_buttonTitle;
+.string Nexposee_buttonText;
+.float Nexposee_buttonSmall;
+.float Nexposee_buttonHover; // 0..1, eased
+bool Nexposee_ButtonsActive(entity me);

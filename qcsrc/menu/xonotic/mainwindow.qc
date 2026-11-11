@@ -292,27 +292,32 @@ void MainWindow_configureMainWindow(entity me)
 		i.configureDialog(i);
 		n.addItemCentered(n, i, i.intendedWidth * eX + i.intendedHeight * eY, SKINALPHAS_MAINMENU_z);
 		n.setNexposee(n, i, SKINPOSITION_DIALOG_SINGLEPLAYER, SKINALPHAS_MAINMENU_x, SKINALPHAS_MAINMENU_y);
+		n.setNexposeeButton(n, i, "/maps/implosion", _("Singleplayer"), _("Campaign and instant action against bots"), false);
 
 		i = NEW(XonoticMultiplayerDialog);
 		i.configureDialog(i);
 		n.addItemCentered(n, i, i.intendedWidth * eX + i.intendedHeight * eY, SKINALPHAS_MAINMENU_z);
 		n.setNexposee(n, i, SKINPOSITION_DIALOG_MULTIPLAYER, SKINALPHAS_MAINMENU_x, SKINALPHAS_MAINMENU_y);
+		n.setNexposeeButton(n, i, "/maps/stormkeep", _("Multiplayer"), _("Play online or on your network"), false);
 
 		i = NEW(XonoticSettingsDialog);
 		i.configureDialog(i);
 		n.addItemCentered(n, i, i.intendedWidth * eX + i.intendedHeight * eY, SKINALPHAS_MAINMENU_z);
 		n.setNexposee(n, i, SKINPOSITION_DIALOG_SETTINGS, SKINALPHAS_MAINMENU_x, SKINALPHAS_MAINMENU_y);
+		n.setNexposeeButton(n, i, "/maps/solarium", _("Settings"), _("Controls, video and audio"), false);
 
 		i = NEW(XonoticCreditsDialog);
 		i.configureDialog(i);
 		n.addItemCentered(n, i, i.intendedWidth * eX + i.intendedHeight * eY, SKINALPHAS_MAINMENU_z);
 		n.setNexposee(n, i, SKINPOSITION_DIALOG_CREDITS, SKINALPHAS_MAINMENU_x, SKINALPHAS_MAINMENU_y);
+		n.setNexposeeButton(n, i, "", _("Credits"), "", true);
 		n.pullNexposee(n, i, eY * (SKINHEIGHT_TITLE * SKINFONTSIZE_TITLE / conheight));
 
 		i = NEW(XonoticQuitDialog);
 		i.configureDialog(i);
 		n.addItemCentered(n, i, i.intendedWidth * eX + i.intendedHeight * eY, SKINALPHAS_MAINMENU_z);
 		n.setNexposee(n, i, SKINPOSITION_DIALOG_QUIT, SKINALPHAS_MAINMENU_x, SKINALPHAS_MAINMENU_y);
+		n.setNexposeeButton(n, i, "", _("Quit"), "", true);
 		n.pullNexposee(n, i, eY * (SKINHEIGHT_TITLE * SKINFONTSIZE_TITLE / conheight));
 
 	me.addItem(me, n, '0 0 0', '1 1 0', SKINALPHAS_MAINMENU_z);
