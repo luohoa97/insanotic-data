@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "sv_lua.qh"
 
-// Every server hook is forwarded to the Lua mods. lua_hookcount() keeps
-// hooks that no mod listens to down to a single builtin call.
+// Every server hook is forwarded to the Lua plugins. lua_hookcount() keeps
+// hooks that no plugin listens to down to a single builtin call.
 
 MUTATOR_HOOKFUNCTION(lua, MakePlayerObserver)
 {
