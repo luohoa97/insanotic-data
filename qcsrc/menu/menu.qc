@@ -164,17 +164,25 @@ void UpdateConWidthHeight(float w, float h, float p)
 	conheight_s = conheight;
 	realconwidth = cvar("vid_conwidth");
 	realconheight = cvar("vid_conheight");
-	if (realconwidth / realconheight > MENU_ASPECT)
+	// Insanotic: phones and tablets are wider than 5:4; on a touch screen the
+	// menu fills any shape from 5:4 to 16:9 instead of leaving black bars
+	float aspect_max = cvar("vid_touchscreen") ? 16 / 9 : MENU_ASPECT;
+	if (realconwidth / realconheight > aspect_max)
 	{
 		// widescreen
-		conwidth = realconheight * MENU_ASPECT;
+		conwidth = realconheight * aspect_max;
 		conheight = realconheight;
 	}
-	else
+	else if (realconwidth / realconheight < MENU_ASPECT)
 	{
 		// squarescreen
 		conwidth = realconwidth;
 		conheight = realconwidth / MENU_ASPECT;
+	}
+	else
+	{
+		conwidth = realconwidth;
+		conheight = realconheight;
 	}
 	if (main)
 	{
@@ -935,11 +943,16 @@ void m_draw(float width, float height)
 	}
 	main.draw(main);
 
-	m_tooltip(menuMousePos);
+	// Insanotic: a finger is no pointer. On a touch screen draw no cursor,
+	// and no tooltips (they follow a hovering pointer a finger never makes).
+	bool touchscreen = cvar("vid_touchscreen");
+	if (!touchscreen)
+		m_tooltip(menuMousePos);
 
 	draw_alpha = max(draw_alpha, SKINALPHA_CURSOR_INTRO * bound(0, menuLogoAlpha, 1));
 
-	draw_drawMousePointer(menuMousePos);
+	if (!touchscreen)
+		draw_drawMousePointer(menuMousePos);
 
 	draw_reset_cropped();
 	postMenuDraw();

@@ -47,6 +47,7 @@ void postMenuDraw();
 void m_sync();
 
 void draw_reset_cropped();
+void draw_reset_full();
 
 const string MENU_SOUND_CLEAR   = "sound/menu/clear.wav";
 const string MENU_SOUND_CLOSE   = "sound/menu/close.wav";

@@ -40,12 +40,16 @@ float updateConwidths(float width, float height, float pixelheight)
 	r_z = pixelheight;
 
 	// calculate the base resolution
+	// Insanotic: a touch screen is held close but is small, and a finger is
+	// bigger than a pointer: base it on 400 instead of 600 lines (the whole
+	// interface 1.5 times bigger)
+	float base_h = cvar("vid_touchscreen") ? 400 : 600;
 	c_z = 0;
-	c_x = 800;
+	c_x = base_h * 4 / 3;
 	c_y = c.x * r.y * r.z / r.x;
-	if(c.y < 600)
+	if(c.y < base_h)
 	{
-		c_y = 600;
+		c_y = base_h;
 		c_x = c.y * r.x / (r.y * r.z);
 	}
 
