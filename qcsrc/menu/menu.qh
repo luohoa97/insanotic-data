@@ -45,6 +45,9 @@ void preMenuDraw();
 void postMenuDraw();
 
 void m_sync();
+// Insanotic: true while the engine draws the main screen from an RmlUi
+// document (menu_rmlui, ui/mainmenu.rml) instead of this menu
+bool m_rml_overview();
 
 void draw_reset_cropped();
 // Insanotic: how far outside its box a tap still hits an item, in the

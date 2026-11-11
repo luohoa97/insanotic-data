@@ -5,6 +5,8 @@ CLASS(XonoticCreditsDialog, XonoticDialog)
 	METHOD(XonoticCreditsDialog, fill, void(entity));
 	METHOD(XonoticCreditsDialog, focusEnter, void(entity));
 	ATTRIB(XonoticCreditsDialog, title, string, _("Credits"));
+	// Insanotic: so "menu_cmd directmenu Credits" opens it (the RmlUi main menu does)
+	ATTRIB(XonoticCreditsDialog, name, string, "Credits");
 	ATTRIB(XonoticCreditsDialog, tooltip, string, _("The Xonotic credits"));
 	ATTRIB(XonoticCreditsDialog, color, vector, SKINCOLOR_DIALOG_CREDITS);
 	ATTRIB(XonoticCreditsDialog, intendedWidth, float, SKINWIDTH_CREDITS);

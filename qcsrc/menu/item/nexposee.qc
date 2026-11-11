@@ -303,7 +303,8 @@ LABEL(have_overlap)
 			e.Container_fontscale_y = fs.y * e.Nexposee_initialFontScale.y;
 		}
 
-		if (buttons)
+		// Insanotic: with menu_rmlui the engine draws these buttons itself
+		if (buttons && !cvar("_menu_rml_active"))
 		{
 			int order = 0;
 			for (e = me.firstChild; e; e = e.nextSibling)
