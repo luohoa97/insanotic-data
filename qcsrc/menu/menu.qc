@@ -28,6 +28,40 @@ int menuShiftState;
 float menuPrevTime;
 float menuAlpha;
 float menuLogoAlpha;
+// Insanotic start: the engine's loading screen shows the logo centered;
+// when the menu first appears the logo glides from there to its place in
+// the menu while the buttons fade in (0 = start, 1 = done)
+float menuIntro = 1;
+const float MENU_INTRO_TIME = 0.4;
+// logo inside the logo layer (2560x2048), and where the loading screen
+// draws it: centered at 42% height, 55% of the screen wide
+// (darkplaces/cl_screen.c, SCR_DrawInsanoticBackdrop)
+const vector MENU_LOGO_POS = '0.01171875 0.0048828125 0';
+const vector MENU_LOGO_SIZE = '0.54296875 0.224609375 0';
+const float MENU_LOGO_START_WIDTH = 0.55;
+const float MENU_LOGO_START_Y = 0.42;
+
+void drawMenuIntroLogo(string img, float t)
+{
+	string pic = draw_UseSkinFor(strcat(img, "_l2"));
+	vector isz = drawgetimagesize(pic);
+	if (isz.x <= 0 || isz.y <= 0) return;
+	// end: the logo layer fitted to the screen height and centered ("h5")
+	// same arithmetic as draw_Picture_Aligned (screen pixels, not conwidth)
+	float aspect = draw_scale.x / draw_scale.y;
+	float layerw = (isz.x / isz.y) / aspect;
+	vector endpos = eX * ((1 - layerw) / 2 + MENU_LOGO_POS.x * layerw) + eY * MENU_LOGO_POS.y;
+	vector endsize = eX * MENU_LOGO_SIZE.x * layerw + eY * MENU_LOGO_SIZE.y;
+	// start: centered as on the loading screen
+	vector startsize = eX * MENU_LOGO_START_WIDTH
+		+ eY * MENU_LOGO_START_WIDTH * aspect * (MENU_LOGO_SIZE.y * isz.y) / (MENU_LOGO_SIZE.x * isz.x);
+	vector startpos = eX * (0.5 - startsize.x / 2) + eY * (MENU_LOGO_START_Y - startsize.y / 2);
+	float k = 1 - (1 - t) * (1 - t) * (1 - t); // ease out
+	vector pos = startpos * (1 - k) + endpos * k;
+	vector sz = startsize * (1 - k) + endsize * k;
+	drawsubpic(boxToGlobal(pos, draw_shift, draw_scale), boxToGlobalSize(sz, draw_scale), pic,
+		MENU_LOGO_POS, MENU_LOGO_SIZE, '1 1 1', 1, 0);
+}
 float prevMenuAlpha;
 bool menuInitialized;
 bool menuNotTheFirstFrame;
@@ -253,6 +287,13 @@ void m_keydown(float key, float ascii)
 {
 	if (!menuInitialized) return;
 	if (!Menu_Active) return;
+
+	// any key or click skips the start animation (and still acts)
+	if (menuIntro < 1)
+	{
+		menuIntro = 1;
+		menuAlpha = 1;
+	}
 
 	if (menuMouseMode && key >= K_MOUSE1 && key <= K_MOUSE3)
 	{
@@ -732,6 +773,8 @@ void m_draw(float width, float height)
             // 1.4 s); the menu is there on the first frame
             menuLogoAlpha = 2;
             menuAlpha = 1;
+            if (!cvar_type("menu_intro") || cvar("menu_intro"))
+                menuIntro = 0;
         }
 		// ALWAYS set this cvar; if we start but menu is not active, this means we want no background music!
 		localcmd("set menu_video_played 1\n");
@@ -781,6 +824,16 @@ void m_draw(float width, float height)
 		menuAlpha = max(0, menuAlpha - 5 * frametime);
 		menuLogoAlpha = 2;
 	}
+	if (menuIntro < 1)
+	{
+		if (Menu_Active)
+		{
+			menuIntro = min(1, menuIntro + realFrametime / MENU_INTRO_TIME);
+			menuAlpha = bound(0, (menuIntro - 0.35) / 0.65, 1);
+		}
+		else
+			menuIntro = 1;
+	}
 
 	draw_reset_cropped();
 
@@ -790,7 +843,14 @@ void m_draw(float width, float height)
 		{
 			draw_reset_full();
 			draw_Fill('0 0 0', '1 1 0', SKINCOLOR_BACKGROUND, 1);
-			drawBackground(SKINGFX_BACKGROUND, bound(0, menuLogoAlpha, 1), SKINALIGN_BACKGROUND, true);
+			if (menuIntro < 1)
+			{
+				// background picture only, then the gliding logo
+				drawBackground(SKINGFX_BACKGROUND, 1, substring(SKINALIGN_BACKGROUND, 0, 2), true);
+				drawMenuIntroLogo(SKINGFX_BACKGROUND, menuIntro);
+			}
+			else
+				drawBackground(SKINGFX_BACKGROUND, bound(0, menuLogoAlpha, 1), SKINALIGN_BACKGROUND, true);
 			draw_reset_cropped();
 			if (menuAlpha <= 0 && SKINALPHA_CURSOR_INTRO > 0)
 			{
