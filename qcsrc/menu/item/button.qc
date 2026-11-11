@@ -76,7 +76,34 @@
 		save = draw_alpha;
 		if (me.disabled) draw_alpha *= me.disabledAlpha;
 
-		if (me.src)
+		if (me.fillStyle)
+		{
+			bool lit = !me.disabled && (me.focused || me.pressed || me.forcePressed || me.clickTime > 0);
+			me.fillHover = bound(0, me.fillHover + (lit ? 1 : -1) * frametime * 8, 1);
+			float hover = me.fillHover;
+			vector isz = (me.fillImage != "") ? draw_PictureSize(me.fillImage) : '0 0 0';
+			if (isz != '0 0 0')
+			{
+				vector pxsz = boxToGlobalSize('1 1 0', draw_scale);
+				float aspect = pxsz.x / max(1, pxsz.y), iaspect = isz.x / max(1, isz.y);
+				vector src = '1 1 0', srcpos = '0 0 0';
+				if (iaspect > aspect) { src.x = aspect / iaspect; srcpos.x = (1 - src.x) / 2; }
+				else { src.y = iaspect / aspect; srcpos.y = (1 - src.y) / 2; }
+				float b = 0.4 + 0.35 * hover;
+				drawsubpic(boxToGlobal('0 0 0', draw_shift, draw_scale), boxToGlobalSize('1 1 0', draw_scale),
+					draw_UseSkinFor(me.fillImage), srcpos, src, eX * b + eY * b + eZ * b, draw_alpha, 0);
+			}
+			else
+				draw_Fill('0 0 0', '1 1 0', me.fillColor * (1 + 0.4 * hover), 0.9);
+			vector px = globalToBoxSize('1 1 0', draw_scale);
+			vector edge = '0.3 0.65 1' * hover + '1 1 1' * (1 - hover);
+			float ea = 0.25 + 0.75 * hover, t = 1 + hover;
+			draw_Fill('0 0 0', eX + eY * px.y * t, edge, ea);
+			draw_Fill(eY * (1 - px.y * t), eX + eY * px.y * t, edge, ea);
+			draw_Fill('0 0 0', eX * px.x * t + eY, edge, ea);
+			draw_Fill(eX * (1 - px.x * t), eX * px.x * t + eY, edge, ea);
+		}
+		else if (me.src)
 		{
 			if (me.srcMulti)
 			{

@@ -149,6 +149,8 @@ void XonoticSingleplayerDialog_fill(entity me)
 		me.TD(me, 2, 3, e = makeXonoticBigButton(_("Instant action! (random map with bots)"), '0 0 0'));
 			e.onClick = InstantAction_LoadMap;
 			e.onClickEntity = NULL;
+			e.fillStyle = true;
+			e.fillImage = "/maps/xoylent";
 	me.TR(me);
 	me.TR(me);
 	me.TR(me);
@@ -173,8 +175,11 @@ void XonoticSingleplayerDialog_fill(entity me)
 	me.TR(me);
 		me.TDempty(me, me.columns * 1/13);
 		me.TD(me, 1, me.columns * 5/13, e = makeXonoticLeaveMatchButton('0 0 0', 0));
+			e.fillStyle = true;
 		me.TDempty(me, me.columns * 1/13);
 		me.TD(me, 1, me.columns * 5/13, e = makeXonoticButton(_("Play campaign!"), '0 0 0'));
+			e.fillStyle = true;
+			e.fillColor = '0.12 0.38 0.75';
 			e.onClick = CampaignList_LoadMap;
 			e.onClickEntity = me.campaignBox;
 }

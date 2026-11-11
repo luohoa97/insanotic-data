@@ -35,6 +35,12 @@ CLASS(Button, Label)
 	ATTRIB(Button, colorF, vector, '1 1 1');
 	ATTRIB(Button, colorD, vector, '1 1 1');
 	ATTRIB(Button, color2, vector, '1 1 1');
+	// Insanotic: flat filled look (a picture covering the button, or a solid
+	// color) with a thin edge that lights up, instead of the skin's frame
+	ATTRIB(Button, fillStyle, float, 0);
+	ATTRIB(Button, fillImage, string);
+	ATTRIB(Button, fillColor, vector, '0.06 0.09 0.15');
+	ATTRIB(Button, fillHover, float, 0);
 	ATTRIB(Button, alpha2, float, 1);
 
 	ATTRIB(Button, origin, vector, '0 0 0');
