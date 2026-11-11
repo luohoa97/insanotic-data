@@ -143,7 +143,7 @@ void draw_FlatButton(vector o, string pic, vector sz, vector theColor, float the
 		case "s": bg = '0 0 0'; a = 0.35; ea = 0.1; break;
 		case "f": bg = bg * 1.6; edge = FLAT_ACCENT; ea = 0.9; break;
 		case "c": bg = FLAT_ACCENT * 0.65; edge = FLAT_ACCENT; ea = 1; break;
-		case "d": a = 0.4; ea = 0.08; break;
+		case "d": a = 0.6; ea = 0.15; break;
 	}
 	drawfill(o, sz, bg, a * theAlpha, 0);
 	draw_FlatFrame(o, sz, edge, ea * theAlpha);

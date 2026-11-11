@@ -229,6 +229,20 @@ void m_init_delayed()
 	}
 	fclose(fh);
 
+	// Insanotic flat look (draw.qc): calmer list colors than the skin's
+	// orange selection, and disabled controls that stay readable
+	if (!(cvar_type("menu_buttons") && !cvar("menu_buttons")))
+	{
+		Skin_ApplySetting("COLOR_LISTBOX_SELECTED", "'0.18 0.42 0.78'");
+		Skin_ApplySetting("ALPHA_LISTBOX_SELECTED", "0.6");
+		Skin_ApplySetting("COLOR_LISTBOX_FOCUSED", "'1 1 1'");
+		Skin_ApplySetting("ALPHA_LISTBOX_FOCUSED", "0.08");
+		Skin_ApplySetting("FADEALPHA_LISTBOX_FOCUSED", "0.04");
+		Skin_ApplySetting("ALPHA_LISTBOX_BACKGROUND", "0.3");
+		Skin_ApplySetting("COLOR_MAPLIST_INCLUDEDBG", "'0.12 0.28 0.5'");
+		Skin_ApplySetting("ALPHA_DISABLED", "0.45");
+	}
+
 	int glob = search_begin(strcat(draw_currentSkin, "/*.tga"), true, true);
 	if (glob >= 0)
 	{

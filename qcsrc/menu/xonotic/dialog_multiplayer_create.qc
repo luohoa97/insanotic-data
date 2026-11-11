@@ -211,6 +211,8 @@ void XonoticServerCreateTab_fill(entity me)
 		me.TDempty(me, me.columns * 1/12);
 		me.TD(me, 1, me.columns * 5/12, e = makeXonoticLeaveMatchButton('0 0 0', 0));
 		me.TD(me, 1, me.columns * 5/12, e = makeXonoticButton(_("Start multiplayer!"), '0 0 0'));
+			e.fillStyle = true; // Insanotic: main action in solid blue
+			e.fillColor = '0.12 0.38 0.75';
 			e.onClick = MapList_LoadMap;
 			e.onClickEntity = me.mapListBox;
 			me.mapListBox.startButton = e;

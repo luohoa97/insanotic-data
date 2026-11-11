@@ -91,6 +91,8 @@ void XonoticServerListTab_fill(entity me)
 	me.TR(me);
 		me.TD(me, 1, me.columns * 0.5, e = makeXonoticLeaveMatchButton('0 0 0', 0));
 		me.TD(me, 1, me.columns * 0.5, e = makeXonoticButton(_("Join!"), '0 0 0'));
+			e.fillStyle = true; // Insanotic: main action in solid blue
+			e.fillColor = '0.12 0.38 0.75';
 			e.onClick = ServerList_Connect_Click;
 			e.onClickEntity = slist;
 			slist.connectButton = e;

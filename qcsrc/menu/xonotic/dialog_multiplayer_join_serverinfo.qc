@@ -225,6 +225,8 @@ void XonoticServerInfoDialog_fill(entity me)
 		//	e.onClickEntity = slist;
 		//	slist.favoriteButton = e;
 		me.TD(me, 1, me.columns/2, e = makeXonoticButton(_("Join!"), '0 0 0'));
+			e.fillStyle = true; // Insanotic: main action in solid blue
+			e.fillColor = '0.12 0.38 0.75';
 			e.onClick = Join_Click;
 			e.onClickEntity = me;
 }
