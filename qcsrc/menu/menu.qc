@@ -481,6 +481,11 @@ void drawBackground(string img, float a, string algn, float force1)
 		{
 			draw_Picture_Aligned(v, scalemode, img, a);
 		}
+		else if (force1 && cvar("_menu_rml_active"))
+		{
+			// Insanotic: the logo layer; the engine draws the logo itself
+			// in its main menu (ui/mainmenu.rml)
+		}
 		else if (force1)
 		{
 			// force all secondary layers to use alpha 1. Prevents ugly issues
@@ -926,7 +931,8 @@ void m_draw(float width, float height)
 			{
 				// background picture only, then the gliding logo
 				drawBackground(SKINGFX_BACKGROUND, 1, substring(SKINALIGN_BACKGROUND, 0, 2), true);
-				drawMenuIntroLogo(SKINGFX_BACKGROUND, menuIntro);
+				if (!cvar("_menu_rml_active"))
+					drawMenuIntroLogo(SKINGFX_BACKGROUND, menuIntro);
 			}
 			else
 				drawBackground(SKINGFX_BACKGROUND, bound(0, menuLogoAlpha, 1), SKINALIGN_BACKGROUND, true);
