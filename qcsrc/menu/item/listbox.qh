@@ -26,7 +26,7 @@ CLASS(ListBox, MenuItem)
 	ATTRIB(ListBox, needScrollToItem, float, -1);
 	METHOD(ListBox, scrollToItem, void(entity, int));
 	ATTRIB(ListBox, previousValue, float, 0);
-	ATTRIB(ListBox, pressed, float, 0);  // 0 = normal, 1 = scrollbar dragging, 2 = item dragging, 3 = released
+	ATTRIB(ListBox, pressed, float, 0);  // 0 = normal, 1 = scrollbar dragging, 2 = item dragging, 3 = released, 4 = touch pressed, 5 = touch scrolling
 	ATTRIB(ListBox, pressOffset, float, 0);
 
 	METHOD(ListBox, updateControlTopBottom, void(entity));

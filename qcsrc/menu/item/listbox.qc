@@ -207,6 +207,21 @@
 			me.setFocusedItem(me, clickeditem);
 			me.mouseMoveOffset = -1;
 		}
+		else if (me.pressed == 4 || me.pressed == 5)
+		{
+			// touch: the list follows the finger once it moved far enough
+			// to not be a tap
+			float moved = pos.y - me.pressOffset;
+			if (me.pressed == 4 && fabs(moved) > 0.04)
+				me.pressed = 5;
+			if (me.pressed == 5)
+			{
+				float target = bound(0, me.previousValue - moved, max(0, me.getTotalHeight(me) - 1));
+				me.scrollPos = me.scrollPosTarget = target;
+				me.setFocusedItem(me, -1);
+				me.mouseMoveOffset = -1;
+			}
+		}
 		return 1;
 	}
 	METHOD(ListBox, mousePress, bool(ListBox this, vector pos))
@@ -237,6 +252,14 @@
 				this.previousValue = this.scrollPos;
 			}
 		}
+		else if (cvar("vid_touchscreen"))
+		{
+			// Insanotic: on a touch screen a press on the items may start a
+			// scroll: decide on release (tap) or when the finger moves
+			this.pressed = 4;
+			this.pressOffset = pos.y;
+			this.previousValue = this.scrollPos;
+		}
 		else
 		{
 			// continue doing that while dragging (even when dragging outside). When releasing, forward the click to the then selected item.
@@ -260,7 +283,9 @@
 	}
 	float ListBox_mouseRelease(entity me, vector pos)
 	{
-		if (me.pressed == 1)
+		if (me.pressed == 4)
+			me.pressed = 2; // a tap: an ordinary click on the item under it
+		if (me.pressed == 1 || me.pressed == 5)
 		{
 			// slider dragging mode
 			// in that case, nothing happens on releasing
