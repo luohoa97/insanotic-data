@@ -1,5 +1,7 @@
 #include "campaign.qh"
 
+bool CampaignList_Rich();
+
 #include <common/campaign_common.qh>
 #include "inputbox.qh"
 
@@ -186,14 +188,109 @@ void XonoticCampaignList_resizeNotify(entity me, vector relOrigin, vector relSiz
 	me.typeIconOrigin = vec3(me.columnPreviewSize - me.checkMarkSize.x, me.checkMarkOrigin.y, 0);
 	me.typeIconSize = me.checkMarkSize;
 
+	if (CampaignList_Rich())
+	{
+		// Insanotic: text over the map picture, on the left 60% of the row
+		me.columnNameOrigin = 3 * me.realFontSize.x;
+		me.columnNameSize = 0.6 - me.columnNameOrigin;
+	}
+
 	rewrapCampaign(me.columnNameSize, me.rowsPerItem - 3, me.emptyLineHeight, me.realFontSize);
 }
 void XonoticCampaignList_doubleClickListBoxItem(entity me, float i, vector where)
 {
 	CampaignList_LoadMap(me, me);
 }
+// Insanotic: every level is a banner filled with its map's picture
+bool CampaignList_Rich()
+{
+	return !(cvar_type("menu_buttons") && !cvar("menu_buttons"));
+}
+
+void CampaignList_DrawRichItem(entity me, int i, bool isSelected, bool isFocused)
+{
+	bool done = (i < me.campaignIndex), current = (i == me.campaignIndex), locked = (i > me.campaignIndex);
+	float ratio = me.itemAbsSize.y / max(1, me.itemAbsSize.x); // row height in row widths
+	vector o = eY * 0.04, sz = eX + eY * 0.92;
+	vector accent = '0.3 0.65 1';
+	string img = strcat("/maps/", campaign_mapname[i]);
+	vector isz = draw_PictureSize(img);
+	float lit = (isSelected || isFocused) ? 1 : 0;
+	if (isz != '0 0 0')
+	{
+		// cover the row with the picture, centered
+		float aspect = me.itemAbsSize.x * sz.x / max(1, me.itemAbsSize.y * sz.y);
+		float iaspect = isz.x / max(1, isz.y);
+		vector src = '1 1 0', srcpos = '0 0 0';
+		if (iaspect > aspect) { src.x = aspect / iaspect; srcpos.x = (1 - src.x) / 2; }
+		else { src.y = iaspect / aspect; srcpos.y = (1 - src.y) / 2; }
+		float b = locked ? 0.15 : (done ? 0.45 : 0.6);
+		b += 0.2 * lit;
+		drawsubpic(boxToGlobal(o, draw_shift, draw_scale), boxToGlobalSize(sz, draw_scale), draw_UseSkinFor(img),
+			srcpos, src, eX * b + eY * b + eZ * b, draw_alpha, 0);
+	}
+	else
+		draw_Fill(o, sz, '0.05 0.08 0.14', 1);
+	// darker on the left, where the text is
+	for (int k = 0; k < 10; ++k)
+		draw_Fill(o + eX * 0.07 * k, eX * 0.07 + eY * sz.y, '0 0 0', 0.07 * (10 - k));
+	// current level: accent stripe; selected: accent edge
+	if (current)
+		draw_Fill(o, eX * 4 * ratio * 0.03 + eY * sz.y, accent, 1);
+	if (isSelected)
+	{
+		float px = 1 / max(1, me.itemAbsSize.x), py = 1 / max(1, me.itemAbsSize.y);
+		draw_Fill(o, eX + eY * py * 2, accent, 1);
+		draw_Fill(o + eY * (sz.y - py * 2), eX + eY * py * 2, accent, 1);
+		draw_Fill(o, eX * px * 2 + eY * sz.y, accent, 1);
+		draw_Fill(o + eX * (1 - px * 2), eX * px * 2 + eY * sz.y, accent, 1);
+	}
+
+	// level number, title, description
+	vector fs = me.realFontSize;
+	vector tfs = fs * 1.7;
+	vector p = eX * me.columnNameOrigin + eY * (0.12);
+	draw_Text(p, strtoupper(sprintf(_("Level %d"), i + 1)), fs, (locked ? '0.6 0.6 0.6' : accent), 1, 0);
+	p.y += fs.y * 1.3;
+	string title = locked ? _("Locked") : campaign_shortdesc[i];
+	draw_Text(p, draw_TextShortenToWidth(title, me.columnNameSize, 0, tfs), tfs, '1 1 1', (locked ? 0.6 : 1), 0);
+	p.y += tfs.y * 1.25;
+	if (!locked)
+	{
+		string s = campaign_longdesc_wrapped[i];
+		int n = tokenizebyseparator(s, "\n");
+		for (int j = 0; j < n && p.y + fs.y < 0.95; ++j)
+		{
+			if (argv(j) == "") { p.y += fs.y * me.emptyLineHeight; continue; }
+			draw_Text(p, argv(j), fs, '0.85 0.88 0.92', 0.9, 0);
+			p.y += fs.y;
+		}
+	}
+
+	// right side: done check, "NEXT" chip or lock
+	vector chip = eX * (1 - 3 * fs.x) + eY * 0.12;
+	if (done)
+		draw_Picture(eX * (1 - me.checkMarkSize.x - 2 * fs.x) + eY * 0.1, "checkmark", me.checkMarkSize, '1 1 1', 1);
+	else if (current)
+	{
+		string t = _("NEXT");
+		float tw = draw_TextWidth(t, 0, fs);
+		vector cp = chip - eX * (tw + fs.x);
+		draw_Fill(cp - eX * fs.x * 0.5 - eY * fs.y * 0.3, eX * (tw + fs.x) + eY * fs.y * 1.6, accent, 0.9);
+		draw_Text(cp, t, fs, '1 1 1', 1, 0);
+	}
+	string gt = strcat("/gfx/menu/", cvar_string("menu_skin"), "/gametype_", campaign_gametype[i]);
+	if (!locked && draw_PictureSize(gt) != '0 0 0')
+		draw_Picture(eX * (1 - me.checkMarkSize.x - 2 * fs.x) + eY * (0.9 - me.checkMarkSize.y), gt, me.checkMarkSize, '1 1 1', 0.9);
+}
+
 void XonoticCampaignList_drawListBoxItem(entity me, int i, vector absSize, bool isSelected, bool isFocused)
 {
+	if (CampaignList_Rich())
+	{
+		CampaignList_DrawRichItem(me, i, isSelected, isFocused);
+		return;
+	}
 	string s;
 	vector theColor;
 	float theAlpha;
