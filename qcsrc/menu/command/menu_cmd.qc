@@ -40,6 +40,10 @@ void _dumptree_close(entity pass, entity me)
 
 float updateConwidths(float width, float height, float pixelheight);
 
+// xonotic/dialog_singleplayer.qc: the RmlUi Singleplayer page uses these
+void InstantAction_LoadMap(entity btn, entity dummy);
+void Menu_StartCampaign(string name, int level);
+
 void GameCommand(string theCommand)
 {
 	int argc = tokenize_console(theCommand);
@@ -54,6 +58,7 @@ void GameCommand(string theCommand)
 		LOG_HELP("  'closemenu' closes the menu window named <item> (or the menu window containing an item named <item>)");
 		LOG_HELP("   if <item> is not specified it shows the list of available items in the console");
 		LOG_HELP("  'dumptree' dumps the state of the menu as a tree to the console");
+		LOG_HELP("  'instantaction' starts a random match against bots, 'campaign <name> <level>' a campaign level");
 
 		LOG_HELP("\nGeneric commands shared by all programs:");
 		GenericCommand_macro_help();
@@ -62,6 +67,18 @@ void GameCommand(string theCommand)
 	}
 
 	if (GenericCommand(theCommand)) return;
+
+	// Insanotic: what the RmlUi Singleplayer page asks for
+	if (argv(0) == "instantaction" && !isdemo())
+	{
+		InstantAction_LoadMap(NULL, NULL);
+		return;
+	}
+	if (argv(0) == "campaign" && argc == 3 && !isdemo())
+	{
+		Menu_StartCampaign(argv(1), stoi(argv(2)));
+		return;
+	}
 
 	if (argv(0) == "sync")
 	{

@@ -140,6 +140,18 @@ void InstantAction_LoadMap(entity btn, entity dummy)
 	cvar_set("lastlevel", "1");
 }
 
+// Insanotic: the RmlUi Singleplayer page starts a campaign level through
+// "menu_cmd campaign <name> <level>" (command/menu_cmd.qc)
+void Menu_StartCampaign(string name, int level)
+{
+	strcpy(campaign_name, name);
+	CampaignFile_Unload();
+	CampaignFile_Load(0, CAMPAIGN_MAX_ENTRIES);
+	if (level < 0 || level >= campaign_entries)
+		return;
+	CampaignSetup(level);
+}
+
 void XonoticSingleplayerDialog_fill(entity me)
 {
 	entity e, btnPrev, btnNext, lblTitle;
