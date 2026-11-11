@@ -538,6 +538,8 @@ float campaign_won_previous;
 // Insanotic: both versions in the bottom right corner of the menu
 void postMenuDraw()
 {
+	if (draw_alpha <= 0 || !Menu_Active)
+		return; // the menu is closed: postMenuDraw still runs every frame
 	string ver = sprintf("Insanotic %s  |  Xonotic %s", cvar_string("insanotic_version"), cvar_string("g_xonoticversion"));
 	float px = 14; // font size in pixels of the virtual screen
 	vector sz = eX * (px / realconwidth) + eY * (px / realconheight);
