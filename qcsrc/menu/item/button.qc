@@ -29,11 +29,14 @@
 	}
 	float Button_mouseDrag(entity me, vector pos)
 	{
+		// a touch screen tap may land a little outside (see
+		// Container_itemFromPoint)
+		vector slop = menu_touch_slop();
 		me.pressed = 1;
-		if (pos.x < 0) me.pressed = 0;
-		if (pos.y < 0) me.pressed = 0;
-		if (pos.x >= 1) me.pressed = 0;
-		if (pos.y >= 1) me.pressed = 0;
+		if (pos.x < -slop.x) me.pressed = 0;
+		if (pos.y < -slop.y) me.pressed = 0;
+		if (pos.x >= 1 + slop.x) me.pressed = 0;
+		if (pos.y >= 1 + slop.y) me.pressed = 0;
 		return 1;
 	}
 	METHOD(Button, mousePress, bool(Button this, vector pos))

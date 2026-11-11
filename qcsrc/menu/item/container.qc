@@ -108,7 +108,25 @@
 			if (pos.y >= o.y + s.y) continue;
 			return e;
 		}
-		return NULL;
+		// Insanotic: on a touch screen a tap that misses every item goes to
+		// the nearest focusable one within the touch slop, so small
+		// buttons have finger-sized targets
+		vector slop = menu_touch_slop();
+		if (slop == '0 0 0') return NULL;
+		entity best = NULL;
+		float bestd = 0;
+		for (e = me.lastChild; e; e = e.prevSibling)
+		{
+			if (!e.focusable) continue;
+			o = e.Container_origin;
+			s = e.Container_size;
+			float dx = max(0, max(o.x - pos.x, pos.x - (o.x + s.x))) / slop.x;
+			float dy = max(0, max(o.y - pos.y, pos.y - (o.y + s.y))) / slop.y;
+			if (dx > 1 || dy > 1) continue;
+			float d = dx * dx + dy * dy;
+			if (!best || d < bestd) { best = e; bestd = d; }
+		}
+		return best;
 	}
 
 	void Container_draw(entity me)

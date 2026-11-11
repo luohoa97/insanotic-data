@@ -142,6 +142,14 @@ void m_init()
 
 const float MENU_ASPECT = 1280 / 1024;
 
+vector menu_touch_slop()
+{
+	if (!cvar("vid_touchscreen")) return '0 0 0';
+	// about 3 % of the screen height around every item (10 of the 400
+	// virtual lines a touch screen menu has)
+	return globalToBoxSize('10 10 0', draw_scale);
+}
+
 void draw_reset_cropped()
 {
 	draw_reset(conwidth, conheight, 0.5 * (realconwidth - conwidth), 0.5 * (realconheight - conheight));
