@@ -83,6 +83,8 @@
 			}
 		this.dragScrollTimer = time;
 		this.pressed = 1;
+		if (cvar("vid_touchscreen"))
+			cvar_set("vid_touchscreen_showkeyboard", "1"); // a tap: see focusLeave
 		return InputBox_mouseDrag(this, pos);
 	}
 
@@ -349,18 +351,17 @@
 	}
 
 	// Insanotic: on a touch screen there is no keyboard until one is asked
-	// for. The engine opens the on-screen keyboard while
-	// vid_touchscreen_showkeyboard is 1, so a text field holds it open while
-	// it has the focus.
+	// for. Tapping a text field opens the on-screen keyboard (the engine
+	// shows it while vid_touchscreen_showkeyboard is 1); losing the focus
+	// closes it. Only a tap: dialogs focus their first text field when they
+	// open, and that must not pop up a keyboard.
 	METHOD(InputBox, focusEnter, void(entity me))
 	{
 		SUPER(InputBox).focusEnter(me);
-		if (cvar("vid_touchscreen"))
-			cvar_set("vid_touchscreen_showkeyboard", "1");
 	}
 	METHOD(InputBox, focusLeave, void(entity me))
 	{
 		SUPER(InputBox).focusLeave(me);
-		if (cvar("vid_touchscreen"))
+		if (cvar("vid_touchscreen") && cvar("vid_touchscreen_showkeyboard"))
 			cvar_set("vid_touchscreen_showkeyboard", "0");
 	}
