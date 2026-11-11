@@ -33,8 +33,14 @@
 		if (me.closeButton)
 		{
 			// move the close button to the right place
-			me.closeButton.Container_origin = '1 0 0' * (1 - me.borderVec.x);
-			me.closeButton.Container_size = me.borderVec;
+			// Insanotic: on a touch screen the close button takes 2.5 times
+			// the width of the title bar height (the x stays square, see
+			// Button), a finger-sized target
+			vector cb = me.borderVec;
+			if (cvar("vid_touchscreen"))
+				cb.x *= 2.5;
+			me.closeButton.Container_origin = '1 0 0' * (1 - cb.x);
+			me.closeButton.Container_size = cb;
 			me.closeButton.color = me.color;
 			me.closeButton.colorC = me.color;
 			me.closeButton.colorF = me.color;

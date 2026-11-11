@@ -133,6 +133,16 @@
 					bool on = (me.srcSuffix == "1") || me.forcePressed;
 					bool hot = !me.disabled && (me.focused || me.pressed || me.clickTime > 0);
 					vector px = globalToBoxSize('1 1 0', draw_scale);
+					if (strstrofs(me.src, "close", 0) >= 0)
+					{
+						// a square box at the right end of a wider target
+						float sq = bSize.y * px.x / px.y;
+						if (sq < bSize.x)
+						{
+							bOrigin.x += bSize.x - sq;
+							bSize.x = sq;
+						}
+					}
 					vector inset = bSize * 0.2;
 					draw_Fill(bOrigin + inset, bSize - 2 * inset, '0 0 0', 0.45);
 					vector edge = hot ? FLAT_ACCENT : '1 1 1';
