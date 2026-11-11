@@ -6,6 +6,11 @@ CLASS(XonoticCharmap, XonoticPicker)
 	METHOD(XonoticCharmap, focusLeave, void(entity));
 	METHOD(XonoticCharmap, resizeNotify, void(entity, vector, vector, vector, vector));
 	METHOD(XonoticCharmap, keyDown, float(entity, float, float, float));
+	METHOD(XonoticCharmap, draw, void(entity));
+	METHOD(XonoticCharmap, mousePress, bool(XonoticCharmap this, vector pos));
+	METHOD(XonoticCharmap, mouseRelease, float(entity, vector));
+	METHOD(XonoticCharmap, mouseMove, float(entity, vector));
+	METHOD(XonoticCharmap, mouseDrag, float(entity, vector));
 	ATTRIB(XonoticCharmap, inputBox, entity);
 	ATTRIB(XonoticCharmap, realFontSize, vector, '0 0 0');
 

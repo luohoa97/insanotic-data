@@ -67,8 +67,41 @@ void XonoticCharmap_resizeNotify(entity me, vector relOrigin, vector relSize, ve
 	me.charOffset = eX * me.realCellSize.x / 2 + eY * ((me.realCellSize.y - me.realFontSize.y) / 2);
 }
 
+// Insanotic: the character map is a pointer tool. On a touch screen it is
+// hidden and takes no input: taps near the name field picked symbols, and
+// the phone's own keyboard (with its emoji) does the typing.
+void XonoticCharmap_draw(entity me)
+{
+	me.focusable = !cvar("vid_touchscreen");
+	if (!me.focusable)
+		return;
+	SUPER(XonoticCharmap).draw(me);
+}
+bool XonoticCharmap_mousePress(entity me, vector pos)
+{
+	if (cvar("vid_touchscreen")) return false;
+	return SUPER(XonoticCharmap).mousePress(me, pos);
+}
+float XonoticCharmap_mouseRelease(entity me, vector pos)
+{
+	if (cvar("vid_touchscreen")) return 0;
+	return SUPER(XonoticCharmap).mouseRelease(me, pos);
+}
+float XonoticCharmap_mouseMove(entity me, vector pos)
+{
+	if (cvar("vid_touchscreen")) return 0;
+	return SUPER(XonoticCharmap).mouseMove(me, pos);
+}
+float XonoticCharmap_mouseDrag(entity me, vector pos)
+{
+	if (cvar("vid_touchscreen")) return 0;
+	return SUPER(XonoticCharmap).mouseDrag(me, pos);
+}
+
 float XonoticCharmap_keyDown(entity me, float key, float ascii, float shift)
 {
+	if (cvar("vid_touchscreen"))
+		return me.inputBox.keyDown(me.inputBox, key, ascii, shift);
 	if(SUPER(XonoticCharmap).keyDown(me, key, ascii, shift))
 		return 1;
 	return me.inputBox.keyDown(me.inputBox, key, ascii, shift);
