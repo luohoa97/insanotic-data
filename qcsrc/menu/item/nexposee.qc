@@ -74,9 +74,18 @@
 
 	// picture filling the button (cropped to its shape), darkened, with the
 	// title on it; the hovered or selected one lights up
-	void Nexposee_DrawButton(entity me, entity e, float alpha)
+	void Nexposee_DrawButton(entity me, entity e, float alpha, int order)
 	{
 		vector o = e.Container_origin, sz = e.Container_size;
+		// start animation: each button rises a little while fading in,
+		// one after another
+		if (menuIntro < 1)
+		{
+			float k = bound(0, (menuIntro - 0.3 - order * 0.07) / 0.45, 1);
+			k = 1 - (1 - k) * (1 - k);
+			alpha *= k;
+			o.y += (1 - k) * 0.04;
+		}
 		float hover = e.Nexposee_buttonHover;
 		float pxw = 1 / conwidth, pxh = 1 / conheight;
 		if (alpha <= 0) return;
@@ -295,8 +304,11 @@ LABEL(have_overlap)
 		}
 
 		if (buttons)
+		{
+			int order = 0;
 			for (e = me.firstChild; e; e = e.nextSibling)
-				Nexposee_DrawButton(me, e, 1 - me.animationFactor);
+				Nexposee_DrawButton(me, e, 1 - me.animationFactor, order++);
+		}
 
 		SUPER(Nexposee).draw(me);
 	}

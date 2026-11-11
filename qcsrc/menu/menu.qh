@@ -34,6 +34,8 @@ entity keyGrabber;
 
 // "virtual" conwidth/height values for other stuff to assume for scaling
 float conwidth, conheight;
+// Insanotic start animation (menu.qc): 0 = start, 1 = done
+float menuIntro = 1;
 
 /** you have to define this for pre-menu initialization. Return 0 if initialization needs to be retried a frame later, 1 if it succeeded. */
 float preMenuInit();

@@ -31,7 +31,6 @@ float menuLogoAlpha;
 // Insanotic start: the engine's loading screen shows the logo centered;
 // when the menu first appears the logo glides from there to its place in
 // the menu while the buttons fade in (0 = start, 1 = done)
-float menuIntro = 1;
 const float MENU_INTRO_TIME = 0.4;
 // logo inside the logo layer (2560x2048), and where the loading screen
 // draws it: centered at 42% height, 55% of the screen wide
@@ -829,7 +828,8 @@ void m_draw(float width, float height)
 		if (Menu_Active)
 		{
 			menuIntro = min(1, menuIntro + realFrametime / MENU_INTRO_TIME);
-			menuAlpha = bound(0, (menuIntro - 0.35) / 0.65, 1);
+			// the buttons fade themselves in (item/nexposee.qc)
+			menuAlpha = (menuIntro >= 0.3) ? 1 : 0;
 		}
 		else
 			menuIntro = 1;
