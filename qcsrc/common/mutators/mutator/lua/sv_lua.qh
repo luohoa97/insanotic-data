@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Insanotic: Lua mod loader, game side. See docs/MODDING.md.
+#pragma once
+
+// XON_LUA engine extension (Insanotic engine only; check before calling)
+float lua_load(string vfs_path) = #680;
+float lua_hook(string hook_name, ...) = #681;
+float lua_hookcount(string hook_name) = #682;
+
+bool autocvar_g_lua;
+
+const int LUA_MAX_MODS = 64;
+
+/** scans mods/<name>/init.lua and loads each mod, ordered by the "order" key
+ *  of an optional mods/<name>/mod.json (default 0), then by folder name.
+ *  The engine also calls this (by name) from the lua_reload command. */
+void Lua_ReloadMods();
