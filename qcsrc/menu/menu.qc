@@ -765,6 +765,29 @@ void m_tooltip(vector pos)
 	}
 }
 
+// Insanotic: the engine can draw the main screen (the buttons for
+// Singleplayer, Multiplayer, ...) from an RmlUi document. It is told through
+// _menu_overview when that screen is up, and says through _menu_rml_active
+// that it is going to draw it, so this menu leaves its own out.
+bool m_rml_overview()
+{
+	return cvar("_menu_rml_active") && cvar("_menu_overview");
+}
+
+void m_publish_overview()
+{
+	static bool last;
+	entity nex = main.mainNexposee;
+	bool overview = Menu_Active && menuInitialized && menuAlpha > 0
+		&& nex && nex.animationState == 0 && main.focusedChild == nex
+		&& Nexposee_ButtonsActive(nex);
+	if (overview != last)
+	{
+		last = overview;
+		cvar_set("_menu_overview", overview ? "1" : "0");
+	}
+}
+
 const int MIN_DISCONNECTION_TIME = 1;
 float autocvar_menu_force_on_disconnection;
 bool autocvar_g_campaign;
@@ -786,6 +809,9 @@ void m_draw(float width, float height)
 			if (autocvar_menu_force_on_disconnection > 0)
 				m_toggle(true);
 			localcmd("\nmenu_cmd directmenu Welcome RESET\n");
+			// Insanotic: back in the menu after a match (campaign included):
+			// the match stopped the menu music, start it again
+			localcmd("\ncd loop $menu_cdtrack\n");
 			connected_time = 0;
 		}
 	}
@@ -926,6 +952,7 @@ void m_draw(float width, float height)
 
 	if (menuAlpha != prevMenuAlpha) cvar_set("_menu_alpha", ftos(menuAlpha));
 
+	m_publish_overview();
 	draw_flat = !(cvar_type("menu_buttons") && !cvar("menu_buttons"));
 	draw_reset_cropped();
 	preMenuDraw();
@@ -972,12 +999,12 @@ void m_draw(float width, float height)
 	// Insanotic: a finger is no pointer. On a touch screen draw no cursor,
 	// and no tooltips (they follow a hovering pointer a finger never makes).
 	bool touchscreen = cvar("vid_touchscreen");
-	if (!touchscreen)
+	if (!touchscreen && !m_rml_overview())
 		m_tooltip(menuMousePos);
 
 	draw_alpha = max(draw_alpha, SKINALPHA_CURSOR_INTRO * bound(0, menuLogoAlpha, 1));
 
-	if (!touchscreen)
+	if (!touchscreen && !m_rml_overview())
 		draw_drawMousePointer(menuMousePos);
 
 	draw_reset_cropped();
