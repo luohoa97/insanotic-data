@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Insanotic: Game > Touch settings (the touch_controls client mod)
+#pragma once
+
+#include "tab.qh"
+CLASS(XonoticGameTouchSettingsTab, XonoticTab)
+	METHOD(XonoticGameTouchSettingsTab, fill, void(entity));
+	METHOD(XonoticGameTouchSettingsTab, showNotify, void(entity));
+	ATTRIB(XonoticGameTouchSettingsTab, title, string, _("Touch"));
+	ATTRIB(XonoticGameTouchSettingsTab, intendedWidth, float, 0.9);
+	ATTRIB(XonoticGameTouchSettingsTab, rows, float, 17.5);
+	ATTRIB(XonoticGameTouchSettingsTab, columns, float, 6.2);
+	ATTRIB(XonoticGameTouchSettingsTab, name, string, "touchsettings");
+ENDCLASS(XonoticGameTouchSettingsTab)
+entity makeXonoticGameTouchSettingsTab();
+#include "../gamesettings.qh"
+REGISTER_SETTINGS(Touch, makeXonoticGameTouchSettingsTab());

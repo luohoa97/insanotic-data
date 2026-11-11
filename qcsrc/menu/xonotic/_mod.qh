@@ -75,6 +75,7 @@
 #include <menu/xonotic/dialog_settings_game_view.qh>
 #include <menu/xonotic/dialog_settings_game_weapons.qh>
 #include <menu/xonotic/dialog_settings_game_assist.qh>
+#include <menu/xonotic/dialog_settings_game_touch.qh>
 #include <menu/xonotic/dialog_settings_input.qh>
 #include <menu/xonotic/dialog_settings_input_userbind.qh>
 #include <menu/xonotic/dialog_settings_misc.qh>
