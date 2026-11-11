@@ -794,8 +794,8 @@ void m_draw(float width, float height)
 		// Insanotic: switch existing players to the Insanotic HUD skin once
 		// (new players get it from xonotic-client.cfg); they can pick another
 		// in Settings > Game > HUD
-		if (cvar("_insanotic_hud") < 1)
-			localcmd("exec hud_insanotic.cfg\nseta _insanotic_hud 1\n");
+		if (cvar("_insanotic_hud") < 2)
+			localcmd("exec hud_insanotic.cfg\nseta _insanotic_hud 2\n");
 	}
 
 	float t = gettime();
