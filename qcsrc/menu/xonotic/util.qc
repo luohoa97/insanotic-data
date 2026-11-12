@@ -623,6 +623,16 @@ float updateCompression()
 	have_jpg = (fexists("particles/particlefont.jpg"));
 	have_tga = (fexists("particles/particlefont.tga"));
 	can_dds = GL_Have_TextureCompression();
+	// Insanotic: the phone packs carry ASTC textures (dds/<name>.ktx) in
+	// place of the DXT ones. The engine reads them through the DDS loader,
+	// so DDS loading must stay on; without this the check below found no
+	// DDS files on a GPU without S3TC and turned it off (grey checkers)
+	if (fexists("dds/particles/particlefont.ktx") && GL_CheckExtension("GL_KHR_texture_compression_astc_ldr"))
+	{
+		cvar_set("gl_texturecompression", "0");
+		cvar_set("r_texture_dds_load", "1");
+		return 1;
+	}
 	if(have_dds && (have_jpg || have_tga))
 	{
 		// both? Let's only use good quality precompressed files
