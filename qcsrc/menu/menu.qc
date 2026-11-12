@@ -481,10 +481,12 @@ void drawBackground(string img, float a, string algn, float force1)
 		{
 			draw_Picture_Aligned(v, scalemode, img, a);
 		}
-		else if (force1 && cvar("_menu_rml_active"))
+		else if (cvar("_menu_rml_active"))
 		{
-			// Insanotic: the logo layer; the engine draws the logo itself
-			// in its main menu (ui/mainmenu.rml)
+			// Insanotic: the other layers hold the logo, and the engine draws
+			// the logo itself in its main menu (ui/mainmenu.rml). This is for the
+			// background of a running match too (a second logo there showed up
+			// next to the engine's).
 		}
 		else if (force1)
 		{
