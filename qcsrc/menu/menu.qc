@@ -1138,10 +1138,19 @@ void m_goto(string itemname)
 	}
 
 	// Insanotic: during a match the engine draws the game menu and team selection from ui/gamemenu.rml and ui/teamselect.rml
-	if ((itemname == "GameMenu" || itemname == "TeamSelect") && cvar("_menu_rml_active") && (gamestatus & (GAME_ISSERVER | GAME_CONNECTED)))
+	if (cvar("_menu_rml_active"))
 	{
-		localcmd(strcat("\nrml_show ", (itemname == "GameMenu") ? "gamemenu" : "teamselect", "\n"));
-		return;
+		// settings is the one settings screen (ui/settings.rml) for every way in
+		if (itemname == "settings")
+		{
+			localcmd("\nrml_show settings\n");
+			return;
+		}
+		if ((itemname == "GameMenu" || itemname == "TeamSelect") && (gamestatus & (GAME_ISSERVER | GAME_CONNECTED)))
+		{
+			localcmd(strcat("\nrml_show ", (itemname == "GameMenu") ? "gamemenu" : "teamselect", "\n"));
+			return;
+		}
 	}
 
 	if (itemname == "nexposee")
