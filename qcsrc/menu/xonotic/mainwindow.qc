@@ -65,7 +65,13 @@ void MainWindow_draw(entity me)
 			DialogOpenButton_Click_withCoords(NULL, me.ToSDialog, '0 0 0', eX * conwidth + eY * conheight);
 		}
 		else if(me.firstRunDialog.shouldShow())
-			DialogOpenButton_Click_withCoords(NULL, me.firstRunDialog, '0 0 0', eX * conwidth + eY * conheight);
+		{
+			// Insanotic: with menu_rmlui the engine draws this as ui/firstrun.rml
+			if (cvar("menu_rmlui"))
+				localcmd("\nrml_show firstrun\n");
+			else
+				DialogOpenButton_Click_withCoords(NULL, me.firstRunDialog, '0 0 0', eX * conwidth + eY * conheight);
+		}
 		
 		me.firstDraw = false;
 	}

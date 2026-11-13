@@ -141,6 +141,13 @@ void XonoticWelcomeDialog_readInputArgs(entity me, int argsbuf)
 		details = welcomeDialog_splitBanner(me, details);
 	me.serverinfo_MOTD_ent.setText(me.serverinfo_MOTD_ent, details);
 	me.frame.setText(me.frame, me.serverinfo_name);
+
+	// Insanotic: the same text for ui/welcome.rml, which shows it through cvars
+	cvar_set("_menu_welcome_name", strdecolorize(me.serverinfo_name));
+	cvar_set("_menu_welcome_map", me.bannerMap);
+	cvar_set("_menu_welcome_title", strdecolorize(me.bannerTitle));
+	cvar_set("_menu_welcome_type", strtoupper(strdecolorize(me.bannerType)));
+	cvar_set("_menu_welcome_details", strreplace("\\n", "\n", strdecolorize(details)));
 }
 
 void XonoticWelcomeDialog_draw(entity me)
@@ -190,6 +197,12 @@ void XonoticWelcomeDialog_draw(entity me)
 void XonoticWelcomeDialog_fill(entity me)
 {
 	registercvar("_menu_welcome_dialog_available", "0", 0);
+	// Insanotic: what ui/welcome.rml shows
+	registercvar("_menu_welcome_name", "", 0);
+	registercvar("_menu_welcome_map", "", 0);
+	registercvar("_menu_welcome_title", "", 0);
+	registercvar("_menu_welcome_type", "", 0);
+	registercvar("_menu_welcome_details", "", 0);
 	cvar_set("_menu_welcome_dialog_available", "1");
 
 	me.frame.allowColors = true; // allow color codes in the title
