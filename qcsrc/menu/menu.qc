@@ -815,7 +815,7 @@ void m_draw(float width, float height)
 			}
 			if (autocvar_menu_force_on_disconnection > 0)
 				m_toggle(true);
-			localcmd("\nmenu_cmd directmenu Welcome RESET\n");
+			localcmd("\nmenu_cmd directmenu Welcome RESET; rml_hide welcome\n");
 			// Insanotic: back in the menu after a match (campaign included):
 			// the match stopped the menu music, start it again
 			localcmd("\ncd loop $menu_cdtrack\n");
@@ -1146,9 +1146,29 @@ void m_goto(string itemname)
 			localcmd("\nrml_show settings\n");
 			return;
 		}
+		if (itemname == "Credits")
+		{
+			localcmd("\nrml_show credits\n");
+			return;
+		}
+		if (itemname == "FirstRun")
+		{
+			localcmd("\nrml_show firstrun\n");
+			return;
+		}
+		if (itemname == "Welcome")
+		{
+			// the text is in the _menu_welcome_* cvars (dialog_welcome.qc); a
+			// RESET leaves them empty and nothing is shown
+			if (cvar_string("_menu_welcome_details") != "" || cvar_string("_menu_welcome_title") != "")
+				localcmd("\nrml_show welcome\n");
+			else if (gamestatus & (GAME_ISSERVER | GAME_CONNECTED))
+				localcmd("\n+show_info0; defer 2 -show_info0\n"); // an old server: the csqc welcome message
+			return;
+		}
 		if ((itemname == "GameMenu" || itemname == "TeamSelect") && (gamestatus & (GAME_ISSERVER | GAME_CONNECTED)))
 		{
-			localcmd(strcat("\nrml_show ", (itemname == "GameMenu") ? "gamemenu" : "teamselect", "\n"));
+			localcmd(strcat("\nrml_show ", ((itemname == "GameMenu") ? "gamemenu" : "teamselect"), "\n"));
 			return;
 		}
 	}
