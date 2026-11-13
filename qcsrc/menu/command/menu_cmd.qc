@@ -201,13 +201,21 @@ void GameCommand(string theCommand)
 
 	if (argv(0) == "inputsettings")
 	{
-		m_goto("inputsettings");
+		// the RML settings page has these tabs now
+		if (cvar("menu_rmlui"))
+			localcmd("\nrml_show settings\n");
+		else
+			m_goto("inputsettings");
 		return;
 	}
 
 	if (argv(0) == "videosettings")
 	{
-		m_goto("videosettings");
+		// the RML settings page has these tabs now
+		if (cvar("menu_rmlui"))
+			localcmd("\nrml_show settings\n");
+		else
+			m_goto("videosettings");
 		return;
 	}
 
