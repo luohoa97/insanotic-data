@@ -1137,6 +1137,22 @@ void m_goto(string itemname)
 		itemname = "nexposee";
 	}
 
+	// Insanotic: during a match the engine draws the game menu and team selection from ui/gamemenu.rml and ui/teamselect.rml
+	if (cvar("_menu_rml_active"))
+	{
+		// settings is the one settings screen (ui/settings.rml) for every way in
+		if (itemname == "settings")
+		{
+			localcmd("\nrml_show settings\n");
+			return;
+		}
+		if ((itemname == "GameMenu" || itemname == "TeamSelect") && (gamestatus & (GAME_ISSERVER | GAME_CONNECTED)))
+		{
+			localcmd(strcat("\nrml_show ", (itemname == "GameMenu") ? "gamemenu" : "teamselect", "\n"));
+			return;
+		}
+	}
+
 	if (itemname == "nexposee")
 	{
 		// unlike 'togglemenu 1', this closes modal and root dialogs if opened
