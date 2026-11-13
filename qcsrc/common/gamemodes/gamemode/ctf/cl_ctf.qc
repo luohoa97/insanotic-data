@@ -174,20 +174,24 @@ void HUD_Mod_CTF(vector pos, vector mySize)
     neutralflag_pos = pos;
     flag_size = e1 * fs * size1 + e2 * size2;
 
-    #define X(team) MACRO_BEGIN \
+    #define X(team, rgb) MACRO_BEGIN \
         f = bound(0, team##flag_statuschange_elapsedtime * 2, 1); \
         if (team##_icon && ctf_stalemate) \
             drawpic_aspect_skin(team##flag_pos, "flag_stalemate", flag_size, '1 1 1', panel_fg_alpha, DRAWFLAG_NORMAL); \
         if (team##_icon_prevstatus && f < 1) \
             drawpic_aspect_skin_expanding(team##flag_pos, team##_icon_prevstatus, flag_size, '1 1 1', panel_fg_alpha * team##_alpha_prevstatus, DRAWFLAG_NORMAL, f); \
         if (team##_icon) \
+        { \
             drawpic_aspect_skin(team##flag_pos, team##_icon, flag_size, '1 1 1', panel_fg_alpha * team##_alpha * f, DRAWFLAG_NORMAL); \
+            if (autocvar_hud_panel_flat) /* a team-coloured stripe under the flag, like a tab marker */ \
+                drawfill(team##flag_pos + eY * (flag_size.y * 0.94), eX * flag_size.x + eY * (flag_size.y * 0.06), rgb, panel_fg_alpha * team##_alpha * f, DRAWFLAG_NORMAL); \
+        } \
     MACRO_END
-    X(red);
-    X(blue);
-    X(yellow);
-    X(pink);
-    X(neutral);
+    X(red, '1 0.25 0.25');
+    X(blue, '0.302 0.651 1');
+    X(yellow, '1 0.85 0.2');
+    X(pink, '1 0.4 0.85');
+    X(neutral, '0.9 0.9 0.92');
     #undef X
 }
 

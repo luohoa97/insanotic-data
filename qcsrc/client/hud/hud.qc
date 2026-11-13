@@ -374,6 +374,24 @@ void HUD_Panel_DrawProgressBar(vector theOrigin, vector theSize, string pic, flo
 	}
 }
 
+// Flat panel background in the style of the RmlUi menus: a dark zinc fill
+// with a 1 px zinc border, square corners. The fill takes hud_panel_bg_color
+// (zinc by default in hud_insanotic.cfg), so team tinting still works.
+void HUD_Panel_DrawBg_Flat()
+{
+	// drawfill() shifts and scales by itself, so pass unscaled values
+	vector p = panel_pos - '1 1 0' * panel_bg_border;
+	vector sz = panel_size + '1 1 0' * 2 * panel_bg_border;
+	float t = 1; // border thickness in HUD units
+	drawfill(p, sz, panel_bg_color, panel_bg_alpha, DRAWFLAG_NORMAL);
+	vector bc = '0.247 0.247 0.275'; // zinc-700 (#3f3f46)
+	float ba = min(1, panel_bg_alpha * 1.4);
+	drawfill(p, eX * sz.x + eY * t, bc, ba, DRAWFLAG_NORMAL);
+	drawfill(p + eY * (sz.y - t), eX * sz.x + eY * t, bc, ba, DRAWFLAG_NORMAL);
+	drawfill(p, eX * t + eY * sz.y, bc, ba, DRAWFLAG_NORMAL);
+	drawfill(p + eX * (sz.x - t), eX * t + eY * sz.y, bc, ba, DRAWFLAG_NORMAL);
+}
+
 void HUD_Panel_DrawHighlight(vector pos, vector mySize, vector color, float theAlpha, int drawflag)
 {
 	TC(int, drawflag);
@@ -382,6 +400,14 @@ void HUD_Panel_DrawHighlight(vector pos, vector mySize, vector color, float theA
 
 	pos = HUD_Shift(pos);
 	mySize = HUD_Scale(mySize);
+
+	if(autocvar_hud_panel_flat)
+	{
+		// flat "leading" marker: a faint fill with an Insanotic blue (#4da6ff) underline
+		drawfill_builtin(pos, mySize, '1 1 1', theAlpha * 0.10, drawflag);
+		drawfill_builtin(pos + eY * (mySize.y * 0.94), eX * mySize.x + eY * (mySize.y * 0.06), '0.302 0.651 1', theAlpha, drawflag);
+		return;
+	}
 
 	string pic;
 	pic = strcat(hud_skin_path, "/num_leading");

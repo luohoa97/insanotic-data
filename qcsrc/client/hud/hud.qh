@@ -50,16 +50,25 @@ REGISTRY_DEFINE_GET(hud_panels, NULL)
 
 #define HUD_PANEL(NAME) HUD_PANEL_##NAME
 
+// 1 = flat rectangular panels (zinc fill, 1px border) like the menus; 0 = the skin's border image
+bool autocvar_hud_panel_flat = true;
+
 // draw the background/borders
+void HUD_Panel_DrawBg_Flat();
 #define HUD_Panel_DrawBg() MACRO_BEGIN \
 	if(panel.current_panel_bg != "0" && panel.current_panel_bg != "") \
-		draw_BorderPicture( \
-			HUD_Shift(panel_pos - '1 1 0' * panel_bg_border), \
-			panel.current_panel_bg, \
-			HUD_Scale(panel_size + '1 1 0' * 2 * panel_bg_border), \
-			panel_bg_color, panel_bg_alpha, \
-			HUD_Scale('1 1 0' * BORDER_MULTIPLIER * panel_bg_border) \
-		); \
+	{ \
+		if(autocvar_hud_panel_flat) \
+			HUD_Panel_DrawBg_Flat(); \
+		else \
+			draw_BorderPicture( \
+				HUD_Shift(panel_pos - '1 1 0' * panel_bg_border), \
+				panel.current_panel_bg, \
+				HUD_Scale(panel_size + '1 1 0' * 2 * panel_bg_border), \
+				panel_bg_color, panel_bg_alpha, \
+				HUD_Scale('1 1 0' * BORDER_MULTIPLIER * panel_bg_border) \
+			); \
+	} \
 MACRO_END
 
 int panel_order[REGISTRY_MAX(hud_panels)];
