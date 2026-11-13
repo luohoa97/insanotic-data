@@ -1168,7 +1168,7 @@ void m_goto(string itemname)
 		}
 		if ((itemname == "GameMenu" || itemname == "TeamSelect") && (gamestatus & (GAME_ISSERVER | GAME_CONNECTED)))
 		{
-			localcmd(strcat("\nrml_show ", (itemname == "GameMenu") ? "gamemenu" : "teamselect", "\n"));
+			localcmd(strcat("\nrml_show ", ((itemname == "GameMenu") ? "gamemenu" : "teamselect"), "\n"));
 			return;
 		}
 	}

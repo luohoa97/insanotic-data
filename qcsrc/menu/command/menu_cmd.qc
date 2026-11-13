@@ -44,6 +44,12 @@ float updateConwidths(float width, float height, float pixelheight);
 void InstantAction_LoadMap(entity btn, entity dummy);
 void Menu_StartCampaign(string name, int level);
 
+// GameCommand has a local named cmd, which the localcmd macro expands to
+void ShowRmlSettings()
+{
+	localcmd("\nrml_show settings\n");
+}
+
 void GameCommand(string theCommand)
 {
 	int argc = tokenize_console(theCommand);
@@ -203,7 +209,7 @@ void GameCommand(string theCommand)
 	{
 		// the RML settings page has these tabs now
 		if (cvar("menu_rmlui"))
-			localcmd("\nrml_show settings\n");
+			ShowRmlSettings();
 		else
 			m_goto("inputsettings");
 		return;
@@ -213,7 +219,7 @@ void GameCommand(string theCommand)
 	{
 		// the RML settings page has these tabs now
 		if (cvar("menu_rmlui"))
-			localcmd("\nrml_show settings\n");
+			ShowRmlSettings();
 		else
 			m_goto("videosettings");
 		return;
